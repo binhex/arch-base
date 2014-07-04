@@ -28,6 +28,9 @@ RUN cd /packer;makepkg -s --asroot --noconfirm
 # install packer using pacman
 RUN pacman -U /packer/packer*.tar.xz --noconfirm
 
+# add supervisor configuration file
+ADD supervisor.conf /etc/supervisor.conf
+
 # cleanup
 #########
 

@@ -8,7 +8,8 @@ MAINTAINER binhex
 RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 
 # set locale
-RUN sed -i 's/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/g' /etc/locale.gen
+RUN sed -i '' 's/^en_US.UTF-8 UTF-8/#en_US.UTF-8 UTF-8/g' /etc/locale.gen
+RUN sed -i '' 's/^#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/g' /etc/locale.gen
 RUN locale-gen
 RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
 RUN export LANG=en_GB.UTF-8

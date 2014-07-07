@@ -11,7 +11,7 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 RUN sed -i 's/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/g' /etc/locale.gen
 RUN locale-gen
 RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
-RUN export LANG="en_GB.UTF-8"
+RUN export LANG=en_GB.UTF-8
 
 # perform system update (must ignore package "filesystem")
 RUN pacman -Syu --ignore filesystem --noconfirm
@@ -22,6 +22,12 @@ RUN pacman -S wget supervisor --noconfirm
 # add in development tools to build packer
 RUN pacman -S --needed base-devel --noconfirm
 
+# add supervisor configuration file
+ADD supervisor.conf /etc/supervisor.conf
+
+# packer
+########
+
 # download packer from aur
 RUN wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz
 
@@ -29,13 +35,11 @@ RUN wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz
 RUN tar -xzf packer.tar.gz
 
 # change dir to untar and run makepkg (cd and makepkg must be single command)
-RUN cd /packer;makepkg -s --asroot --noconfirm
+RUN cd /packer && \
+	makepkg -s --asroot --noconfirm
 
 # install packer using pacman
 RUN pacman -U /packer/packer*.tar.xz --noconfirm
-
-# add supervisor configuration file
-ADD supervisor.conf /etc/supervisor.conf
 
 # cleanup
 #########

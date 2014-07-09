@@ -8,7 +8,10 @@ MAINTAINER binhex
 RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 
 # set locale
+RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 RUN locale-gen
+RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
+RUN export LANG="en_GB.UTF-8"
 
 # perform system update (must ignore package "filesystem")
 RUN pacman -Syu --ignore filesystem --noconfirm

@@ -47,8 +47,8 @@ RUN pacman -U /packer/packer*.tar.xz --noconfirm
 # cleanup
 #########
 
-# remove old packages
-RUN pacman -Sc --noconfirm
+# completely empty pacman cache folder
+RUN pacman -Scc --noconfirm
 
 # remove unwanted files
 RUN rm -rf /archlinux/usr/share/locale

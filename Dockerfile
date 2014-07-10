@@ -47,13 +47,14 @@ RUN pacman -U /packer/packer*.tar.xz --noconfirm
 # cleanup
 #########
 
-# completely empty pacman cache folder
-RUN pacman -Scc --noconfirm
-
-# remove unwanted files
+# remove unwanted system files
 RUN rm -rf /archlinux/usr/share/locale
 RUN rm -rf /archlinux/usr/share/man
 
-# remove temporary tarball for packer
+# completely empty pacman cache folder
+RUN pacman -Scc --noconfirm
+
+# remove temporary files
 RUN rm -rf /packer
 RUN rm -rf packer*
+RUN rm -rf /tmp/*

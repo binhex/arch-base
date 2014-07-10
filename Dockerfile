@@ -7,14 +7,14 @@ MAINTAINER binhex
 # update mirror list for uk server
 RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 
+# set environment variables
+ENV HOME /root
+ENV LANG en_GB.UTF-8
+
 # set locale
 RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 RUN locale-gen
 RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
-
-# fix locale agony
-#ENV LANG en_GB.UTF-8
-ENV LC_ALL en_GB.UTF-8
 
 # perform system update (must ignore package "filesystem")
 RUN pacman -Syu --ignore filesystem --noconfirm

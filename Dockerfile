@@ -20,7 +20,7 @@ RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
 RUN pacman -Syu --ignore filesystem --noconfirm
 
 # add in pre-req from official repo
-RUN pacman -S wget supervisor --noconfirm
+RUN pacman -S supervisor --noconfirm
 
 # add in development tools to build packer
 RUN pacman -S --needed base-devel --noconfirm
@@ -28,21 +28,31 @@ RUN pacman -S --needed base-devel --noconfirm
 # add supervisor configuration file
 ADD supervisor.conf /etc/supervisor.conf
 
+# home
+######
+
+# create user nobody home directory
+RUN mkdir -p /home/nobody
+
+# set permissions
+RUN chown -R nobody:users /home/nobody
+RUN chmod -R 775 /home/nobody
+
 # packer
 ########
 
 # download packer from aur
-RUN wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz
+ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
 
 # untar packer tarball
-RUN tar -xzf packer.tar.gz
+RUN tar -xzf /root/packer.tar.gz
 
 # change dir to untar and run makepkg (cd and makepkg must be single command)
-RUN cd /packer && \
+RUN cd /root/packer && \
 	makepkg -s --asroot --noconfirm
 
 # install packer using pacman
-RUN pacman -U /packer/packer*.tar.xz --noconfirm
+RUN pacman -U /root/packer/packer*.tar.xz --noconfirm
 
 # cleanup
 #########
@@ -55,6 +65,5 @@ RUN rm -rf /archlinux/usr/share/man
 RUN pacman -Scc --noconfirm
 
 # remove temporary files
-RUN rm -rf /packer
-RUN rm -rf packer*
+RUN rm -rf /root/*
 RUN rm -rf /tmp/*

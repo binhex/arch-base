@@ -42,16 +42,18 @@ RUN chmod -R 775 /home/nobody
 ########
 
 # change to root dir
-RUN cd /root
+RUN cd /root && \
 
-# download packer from aur
-ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
+	# download packer from aur
+	ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz && \
 
-# untar packer tarball
-RUN tar -xzf packer.tar.gz
+	# untar packer tarball
+	RUN tar -xzf packer.tar.gz
 
 # change dir to untar and run makepkg (cd and makepkg must be single command)
 RUN cd /root/packer && \
+
+	#compile packer
 	makepkg -s --asroot --noconfirm
 
 # install packer using pacman

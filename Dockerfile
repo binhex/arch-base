@@ -41,6 +41,9 @@ RUN chmod -R 775 /home/nobody
 # packer
 ########
 
+# change to root dir
+RUN cd /root
+
 # download packer from aur
 ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
 

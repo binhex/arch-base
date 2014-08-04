@@ -48,7 +48,7 @@ RUN cd /root
 ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
 
 # untar packer tarball
-RUN tar -xzf /root/packer.tar.gz
+RUN tar -xzf packer.tar.gz
 
 # change dir to untar and run makepkg (cd and makepkg must be single command)
 RUN cd /root/packer && \

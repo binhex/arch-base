@@ -20,7 +20,7 @@ RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
 RUN pacman -Syu --ignore filesystem --noconfirm
 
 # add in pre-req from official repo
-RUN pacman -S wget supervisor --noconfirm
+RUN pacman -S supervisor --noconfirm
 
 # add in development tools to build packer
 RUN pacman -S --needed base-devel --noconfirm
@@ -42,8 +42,10 @@ RUN chmod -R 775 /home/nobody
 ########
 
 # download packer from aur
+ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
+
+# download packer from aur
 RUN cd /root && \
-	wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz && \
 	tar -xzf packer.tar.gz
 
 # change dir to untar and run makepkg (cd and makepkg must be single command)

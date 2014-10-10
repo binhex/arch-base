@@ -4,39 +4,15 @@ MAINTAINER binhex
 # base
 ######
 
-# update mirror list for uk server
-RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-
-# set environment variables
-ENV HOME /root
-ENV LANG en_GB.UTF-8
-
-# set locale
-RUN echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
-RUN locale-gen
-RUN echo LANG="en_GB.UTF-8" > /etc/locale.conf
-
-# perform system update (must ignore package "filesystem")
-RUN pacman -Syu --ignore filesystem --noconfirm
-
-# add in pre-req from official repo
-RUN pacman -S supervisor --noconfirm
-
-# add in development tools to build packer
-RUN pacman -S --needed base-devel --noconfirm
-
-# add supervisor configuration file
-ADD supervisor.conf /etc/supervisor.conf
-
-# home
-######
-
-# create user nobody home directory
-RUN mkdir -p /home/nobody
-
-# set permissions
-RUN chown -R nobody:users /home/nobody
-RUN chmod -R 775 /home/nobody
+RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist && \
+	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
+	locale-gen && \
+	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
+	pacman -Syu --ignore filesystem --noconfirm && \
+	pacman -S supervisor --noconfirm && \
+	mkdir -p /home/nobody && \
+	chown -R nobody:users /home/nobody && \
+	chmod -R 775 /home/nobody
 
 # packer
 ########
@@ -46,25 +22,25 @@ ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.
 
 # download packer from aur
 RUN cd /root && \
-	tar -xzf packer.tar.gz
+	tar -xzf packer.tar.gz && \
+	cd /root/packer && \
+	makepkg -s --asroot --noconfirm && \
+	pacman -U /root/packer/packer*.tar.xz --noconfirm && \
+	rm -rf /archlinux/usr/share/locale && \
+	rm -rf /archlinux/usr/share/man && \
+	pacman -Scc --noconfirm && \
+	rm -rf /root/* && \
+	rm -rf /tmp/*
 
-# change dir to untar and run makepkg (cd and makepkg must be single command)
-RUN cd /root/packer && \
-	makepkg -s --asroot --noconfirm
+# env
+#####
 
-# install packer using pacman
-RUN pacman -U /root/packer/packer*.tar.xz --noconfirm
+# set environment variables
+ENV HOME /root
+ENV LANG en_GB.UTF-8
 
-# cleanup
-#########
+# supervisor
+############
 
-# remove unwanted system files
-RUN rm -rf /archlinux/usr/share/locale
-RUN rm -rf /archlinux/usr/share/man
-
-# completely empty pacman cache folder
-RUN pacman -Scc --noconfirm
-
-# remove temporary files
-RUN rm -rf /root/*
-RUN rm -rf /tmp/*
+# add supervisor configuration file
+ADD supervisor.conf /etc/supervisor.conf

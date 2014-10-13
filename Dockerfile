@@ -14,7 +14,7 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	mkdir -p /home/nobody && \
 	chown -R nobody:users /home/nobody && \
 	chmod -R 775 /home/nobody && \
-	pacman -Scc --noconfirm && \
+	pacman -Scc --noconfirm
 
 # env
 #####

@@ -1,4 +1,4 @@
-FROM base/archlinux
+FROM base/archlinux:2014.07.03
 MAINTAINER binhex
 
 # base

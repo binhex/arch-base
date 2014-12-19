@@ -1,41 +1,30 @@
-FROM base/archlinux:2014.07.03
+FROM base/archlinux
 MAINTAINER binhex
-
-# additional files
-##################
-
-# download packer from aur
-ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
 
 # base
 ######
 
-# update repo list, set locale, install packer, install runit, create user nobody home dir, cleanup
+# update repo list, set locale, install supervisor, create user nobody home dir
 RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist && \
 	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
 	locale-gen && \
 	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
-	pacman -Syu --ignore filesystem --noconfirm && \	
-	pacman -S --needed base-devel --noconfirm && \	
-	cd /root && \
-	tar -xzf packer.tar.gz && \
-	cd /root/packer && \
-	makepkg -s --asroot --noconfirm && \
-	pacman -U /root/packer/packer*.tar.xz --noconfirm && \
-	packer -S runit --noconfirm && \
-	pacman -Ru base-devel packer --noconfirm && \
-	pacman -Scc --noconfirm && \
+	pacman -Syu --ignore filesystem --noconfirm && \
+	pacman -S supervisor --noconfirm && \
 	mkdir -p /home/nobody && \
 	chown -R nobody:users /home/nobody && \
 	chmod -R 775 /home/nobody && \
-	rm -rf /archlinux/usr/share/locale && \
-	rm -rf /archlinux/usr/share/man && \
-	rm -rf /root/* && \
-	rm -rf /tmp/*
-	
+	pacman -Scc --noconfirm
+
 # env
 #####
 
 # set environment variables for root and language
 ENV HOME /root
 ENV LANG en_GB.UTF-8
+
+# additional files
+##################
+
+# add supervisor configuration file
+ADD supervisor.conf /etc/supervisor.conf

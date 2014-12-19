@@ -1,6 +1,12 @@
 FROM base/archlinux:2014.07.03
 MAINTAINER binhex
 
+# additional files
+##################
+
+# download packer from aur
+ADD https://aur.archlinux.org/packages/pa/packer/packer.tar.gz /root/packer.tar.gz
+
 # base
 ######
 

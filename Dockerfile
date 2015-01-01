@@ -14,9 +14,6 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	pacman-db-upgrade && \
 	pacman -Syu --ignore filesystem --noconfirm && \
 	pacman -S supervisor --noconfirm && \
-	mkdir -p /home/nobody && \
-	chown -R nobody:users /home/nobody && \
-	chmod -R 775 /home/nobody && \
 	pacman -Scc --noconfirm
 
 # env

@@ -9,12 +9,14 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
 	locale-gen && \
 	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
+	useradd -s /bin/bash makepkg-user && \
+	echo makepkg-password | passwd makepkg-user --stdin && \
+	pacman-db-upgrade && \
 	pacman -Syu --ignore filesystem --noconfirm && \
 	pacman -S supervisor --noconfirm && \
 	mkdir -p /home/nobody && \
 	chown -R nobody:users /home/nobody && \
 	chmod -R 775 /home/nobody && \
-	sed -i -e 's/nobody:x:99:99:nobody:\/:\/usr\/bin\/nologin/nobody:x:99:99:nobody:\/home\/nobody:\/bin\/bash/g' /etc/passwd && \
 	pacman -Scc --noconfirm
 
 # env

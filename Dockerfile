@@ -10,7 +10,7 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	locale-gen && \
 	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
 	useradd -s /bin/bash makepkg-user && \
-	echo makepkg-password | passwd makepkg-user --stdin && \
+	echo -e "makepkg-password\nmakepkg-password" | passwd makepkg-user && \
 	pacman-db-upgrade && \
 	pacman -Syu --ignore filesystem --noconfirm && \
 	pacman -S supervisor --noconfirm && \

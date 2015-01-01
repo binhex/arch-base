@@ -14,6 +14,7 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	mkdir -p /home/nobody && \
 	chown -R nobody:users /home/nobody && \
 	chmod -R 775 /home/nobody && \
+	sed -i -e 's/nobody:x:99:99:nobody:\/:\/usr\/bin\/nologin/nobody:x:99:99:nobody:\/home\/nobody:\/bin\/bash/g' /etc/passwd && \
 	pacman -Scc --noconfirm
 
 # env

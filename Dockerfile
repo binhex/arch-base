@@ -17,6 +17,10 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	pacman -Syu --ignore filesystem --noconfirm && \
 	pacman -S supervisor --noconfirm && \
 	pacman -Scc --noconfirm
+	rm -rf /archlinux/usr/share/locale && \
+	rm -rf /archlinux/usr/share/man && \
+	rm -rf /root/* && \
+	rm -rf /tmp/*
 
 # env
 #####

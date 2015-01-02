@@ -6,12 +6,14 @@ MAINTAINER binhex
 
 # update repo list, set locale, install supervisor, create user nobody home dir
 RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist && \
-	pacman-db-upgrade && \
 	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
 	locale-gen && \
 	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
 	useradd -s /bin/bash makepkg-user && \
 	echo -e "makepkg-password\nmakepkg-password" | passwd makepkg-user && \
+	pacman -Sy --noconfirm && \
+	pacman -S pacman --noconfirm && \
+	pacman-db-upgrade && \
 	pacman -Syu --ignore filesystem --noconfirm && \
 	pacman -S supervisor --noconfirm && \
 	pacman -Scc --noconfirm

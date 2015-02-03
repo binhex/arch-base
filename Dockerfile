@@ -9,6 +9,9 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
 	locale-gen && \
 	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
+	mkdir -p /home/nobody && \
+	chown -R nobody:users /home/nobody && \
+	chmod -R 775 /home/nobody && \	
 	pacman -Sy --noconfirm && \
 	pacman -S pacman --noconfirm && \
 	pacman-db-upgrade && \
@@ -23,9 +26,11 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 # env
 #####
 
-# set environment variables for root and language
-ENV HOME /root
+# set environment variables for language
 ENV LANG en_GB.UTF-8
+
+# set terminal to allow use of htop for docker exec
+export TERM=xterm
 
 # additional files
 ##################

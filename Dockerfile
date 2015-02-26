@@ -26,11 +26,11 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 # env
 #####
 
+# set environment variable for terminal
+ENV TERM xterm
+
 # set environment variables for language
 ENV LANG en_GB.UTF-8
-
-# set terminal to allow use of htop for docker exec
-export TERM=xterm
 
 # additional files
 ##################

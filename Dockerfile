@@ -26,6 +26,9 @@ RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc
 # env
 #####
 
+# set environment variables for user nobody
+ENV HOME /home/nobody
+
 # set environment variable for terminal
 ENV TERM xterm
 

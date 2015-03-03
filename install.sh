@@ -24,7 +24,6 @@ pacman -S supervisor --noconfirm
 
 # cleanup
 yes|pacman -Scc
-userdel -r makepkg-user
 rm -rf /usr/share/locale/*
 rm -rf /usr/share/man/*
 rm -rf /root/*

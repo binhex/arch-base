@@ -1,27 +1,18 @@
 FROM base/archlinux:2014.07.03
 MAINTAINER binhex
 
-# base
-######
+# additional files
+##################
 
-# update repo list, set locale, install supervisor, create user nobody home dir
-RUN echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist && \
-	echo en_GB.UTF-8 UTF-8 > /etc/locale.gen && \
-	locale-gen && \
-	echo LANG="en_GB.UTF-8" > /etc/locale.conf && \
-	mkdir -p /home/nobody && \
-	chown -R nobody:users /home/nobody && \
-	chmod -R 775 /home/nobody && \	
-	pacman -Sy --noconfirm && \
-	pacman -S pacman --noconfirm && \
-	pacman-db-upgrade && \
-	pacman -Syu --ignore filesystem --noconfirm && \
-	pacman -S supervisor --noconfirm && \
-	pacman -Scc --noconfirm
-	rm -rf /usr/share/locale/* && \
-	rm -rf /usr/share/man/* && \
-	rm -rf /root/* && \
-	rm -rf /tmp/*
+# add install bash script
+ADD install.sh /root/install.sh
+
+# install app
+#############
+
+# run bash script to update base image, set locale, install supervisor and cleanup
+RUN chmod +x /root/install.sh && \
+	/bin/bash /root/install.sh
 
 # env
 #####

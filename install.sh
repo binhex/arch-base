@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# update arch repo list
+# update arch repo list with uk mirrors
 echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+echo 'Server = http://mirror.cinosure.com/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+echo 'Server = http://mirrors.manchester.m247.com/arch-linux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+echo 'Server = http://www.mirrorservice.org/sites/ftp.archlinux.org/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+echo 'Server = http://arch.serverspace.co.uk/arch/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+echo 'Server = http://archlinux.mirrors.uk2.net/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

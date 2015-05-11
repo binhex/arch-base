@@ -24,8 +24,8 @@ pacman -S pacman --noconfirm
 pacman-db-upgrade
 
 # remove and reset keys
-rm -rf /etc/pacman.d/gnupg
-pacman-key --init --noconfirm
+dirmngr </dev/null
+pacman-key --refresh-keys
 
 # update packages
 pacman -Syu --ignore filesystem --noconfirm

@@ -16,15 +16,16 @@ echo LANG="en_GB.UTF-8" > /etc/locale.conf
 # setup env for user nobody
 mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
-chmod -R 775 /home/nobody	
+chmod -R 775 /home/nobody
 
 # update pacman and db
 pacman -Sy --noconfirm
 pacman -S pacman --noconfirm
 pacman-db-upgrade
 
-# remove and reset keys
-dirmngr </dev/null
+# refresh keys for pacman
+mkdir -p /home/nobody/.gnupg/
+touch /home/nobody/.gnupg/dirmngr_ldapservers.conf
 pacman-key --refresh-keys
 
 # update packages

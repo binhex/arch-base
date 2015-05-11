@@ -18,10 +18,16 @@ mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody	
 
-# update pacman, upgrade packages
+# update pacman and db
 pacman -Sy --noconfirm
 pacman -S pacman --noconfirm
 pacman-db-upgrade
+
+# remove and reset keys
+rm -rf /etc/pacman.d/gnupg
+pacman-key --init
+
+# update packages
 pacman -Syu --ignore filesystem --noconfirm
 
 # install supervisor

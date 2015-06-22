@@ -13,11 +13,14 @@ echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 locale-gen
 echo LANG="en_GB.UTF-8" > /etc/locale.conf
 
+# add user "nobody" to group "users"
+usermod -aG users nobody
+
 # setup env for user nobody
 mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody
-
+ 
 # update pacman and db
 pacman -Sy --noconfirm
 pacman -S pacman --noconfirm

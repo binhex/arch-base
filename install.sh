@@ -13,8 +13,11 @@ echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 locale-gen
 echo LANG="en_GB.UTF-8" > /etc/locale.conf
 
-# add user "nobody" to secondary group "users" (will retain primary membership)
-usermod -a -G users nobody
+# add user "nobody" to primary group "users" (will remove any other group membership)
+usermod -g users nobody
+
+# add user "nobody" to secondary group "nobody" (will retain primary membership)
+usermod -a -G nobody nobody
 
 # setup env for user nobody
 mkdir -p /home/nobody

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit script if return code != 0
+set -e
+
 # update arch repo list with uk mirrors
 echo 'Server = http://archlinux.mirrors.uk2.net/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 echo 'Server = http://mirror.cinosure.com/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist

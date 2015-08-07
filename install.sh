@@ -34,8 +34,6 @@ pacman-db-upgrade
 
 # refresh keys for pacman
 dirmngr </dev/null
-#mkdir -p /home/nobody/.gnupg/
-#touch /home/nobody/.gnupg/dirmngr_ldapservers.conf
 pacman-key --refresh-keys
 
 # update packages

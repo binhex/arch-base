@@ -27,16 +27,21 @@ mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody
  
-# update pacman and db
+# upgrade pacman and db
 pacman -Sy --noconfirm
 pacman -S pacman --noconfirm
 pacman-db-upgrade
 
-# refresh keys for pacman
+# delete any local keys
+rm -rf /root/.gnupg
+
+# force re-creation of /root/.gnupg and start of dirmgr
 dirmngr </dev/null
+
+# refresh keys for pacman
 pacman-key --refresh-keys
 
-# update packages
+# update packages ignoring filesystem (docker limitation)
 pacman -Syu --ignore filesystem --noconfirm
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)

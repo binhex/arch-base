@@ -11,6 +11,9 @@ echo 'Server = http://www.mirrorservice.org/sites/ftp.archlinux.org/$repo/os/$ar
 echo 'Server = http://arch.serverspace.co.uk/arch/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 
+# update packages ignoring filesystem (docker limitation)
+pacman -Syu --ignore filesystem --noconfirm
+
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 locale-gen
@@ -27,26 +30,21 @@ mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody
  
-# upgrade pacman and db
-pacman -Sy --noconfirm
-pacman -S pacman --noconfirm
+# upgrade pacman db
 pacman-db-upgrade
 
 # delete any local keys
 rm -rf /root/.gnupg
 
-# force re-creation of /root/.gnupg and start of dirmgr
+# force re-creation of /root/.gnupg and start dirmgr
 dirmngr </dev/null
 
 # refresh keys for pacman
 pacman-key --refresh-keys
 
-# update packages ignoring filesystem (docker limitation)
-pacman -Syu --ignore filesystem --noconfirm
-
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
-# curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/releases/download/ncurses5-compat-libs-6.0-2/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz
-# pacman -U --force /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz --noconfirm
+curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/releases/download/ncurses5-compat-libs-6.0-2/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz
+pacman -U --force /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz --noconfirm
 
 # install supervisor
 pacman -S supervisor --noconfirm

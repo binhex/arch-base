@@ -8,10 +8,10 @@ Arch Linux is an independently developed, i686/x86-64 general purpose GNU/Linux 
 
 **Build notes**
 
-Arch Linux base image based upon image available on Docker Hub https://hub.docker.com/r/base/archlinux/. This image also includes Supervisor to help monitor and run child processes in a Docker container.
+Arch Linux base image based upon image available on Docker Hub https://hub.docker.com/r/base/archlinux/.
 
 **Notes**
 
-N/A
+This image also includes Supervisor to help monitor and run child processes in a Docker container.
 
 [Support forum](http://lime-technology.com/forum/index.php?topic=38055.0)

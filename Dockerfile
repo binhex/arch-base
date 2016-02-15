@@ -5,7 +5,7 @@ MAINTAINER binhex
 ##################
 
 # add install bash script
-ADD install.sh /root/install.sh
+ADD setup/install.sh /root/install.sh
 
 # install app
 #############
@@ -30,4 +30,4 @@ ENV LANG en_GB.UTF-8
 ##################
 
 # add supervisor configuration file
-ADD supervisor.conf /etc/supervisor.conf
+ADD setup/supervisor.conf /etc/supervisor.conf

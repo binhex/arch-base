@@ -11,7 +11,7 @@ ADD setup/install.sh /root/install.sh
 #############
 
 # run bash script to update base image, set locale, install supervisor and cleanup
-RUN chmod +x /root/install.sh && \
+RUN chmod +x /root/*.sh && \
 	/bin/bash /root/install.sh
 
 # env

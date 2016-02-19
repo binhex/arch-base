@@ -13,7 +13,7 @@ echo "[info] content of arch mirrorlist file"
 cat /etc/pacman.d/mirrorlist
 
 # update packages ignoring filesystem (docker limitation)
-pacman -Syyuu --ignore filesystem --noconfirm
+pacman -Syu --ignore filesystem --noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

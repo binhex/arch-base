@@ -7,7 +7,10 @@ set -e
 yesterdays_date=$(date -d "yesterday" +%Y/%m/%d)
 
 # now set pacman to use snapshot for packages for yesterdays date
-echo "Server = https://archive.archlinux.org/repos/${yesterdays_date}/$repo/os/$arch" > /etc/pacman.d/mirrorlist
+echo 'Server = https://archive.archlinux.org/repos/$yesterdays_date/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+
+echo "[info] content of arch mirrorlist file"
+cat /etc/pacman.d/mirrorlist
 
 # update packages ignoring filesystem (docker limitation)
 pacman -Syyuu --ignore filesystem --noconfirm

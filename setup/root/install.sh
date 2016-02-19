@@ -10,7 +10,7 @@ yesterdays_date=$(date -d "yesterday" +%Y/%m/%d)
 echo "Server = https://archive.archlinux.org/repos/${yesterdays_date}/$repo/os/$arch" > /etc/pacman.d/mirrorlist
 
 # update packages ignoring filesystem (docker limitation)
-pacman -Syu --ignore filesystem --noconfirm
+pacman -Syyuu --ignore filesystem --noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

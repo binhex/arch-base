@@ -3,13 +3,11 @@
 # exit script if return code != 0
 set -e
 
-# update arch repo list with uk mirrors
-echo 'Server = http://archlinux.mirrors.uk2.net/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-echo 'Server = http://mirror.cinosure.com/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://mirrors.manchester.m247.com/arch-linux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://www.mirrorservice.org/sites/ftp.archlinux.org/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://arch.serverspace.co.uk/arch/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+# construct yesterdays date (cannot use todays as archive wont exist) and set url for archive
+yesterdays_date=$(date -d "yesterday" +%Y/%m/%d)
+
+# now set pacman to use snapshot for packages for yesterdays date
+echo "Server = https://archive.archlinux.org/repos/${yesterdays_date}/$repo/os/$arch" > /etc/pacman.d/mirrorlist
 
 # update packages ignoring filesystem (docker limitation)
 pacman -Syu --ignore filesystem --noconfirm
@@ -43,7 +41,7 @@ dirmngr </dev/null
 pacman-key --refresh-keys
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
-curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/releases/download/ncurses5-compat-libs-6.0-2/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz
+curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/raw/master/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz
 pacman -U /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz --noconfirm
 
 # install supervisor

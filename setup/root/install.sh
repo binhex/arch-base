@@ -31,6 +31,9 @@ mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody
  
+# set shell for user nobody
+chsh -s /bin/bash nobody
+ 
 # upgrade pacman db
 pacman-db-upgrade
 

@@ -1,4 +1,4 @@
-FROM base/archlinux:2015.06.01
+FROM binhex/arch-scratch:0.0.1-01
 MAINTAINER binhex
 
 # additional files

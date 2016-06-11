@@ -1,4 +1,4 @@
-FROM binhex/arch-scratch:0.0.1-01
+FROM binhex/arch-scratch:20160611-01
 MAINTAINER binhex
 
 # additional files

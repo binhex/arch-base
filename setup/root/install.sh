@@ -52,7 +52,7 @@ curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/
 pacman -U /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz --noconfirm
 
 # install additional packages
-pacman -S supervisor nano vi ldns moreutils net-tools dos2unix --noconfirm
+pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip htop --noconfirm
 
 # cleanup
 yes|pacman -Scc

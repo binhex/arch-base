@@ -48,11 +48,11 @@ dirmngr </dev/null
 pacman-key --refresh-keys
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
-curl -o /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz
-pacman -U /tmp/ncurses5-compat-libs-6.0-2-x86_64.pkg.tar.xz --noconfirm
+curl -o /tmp/ncurses5-compat-libs-6.0-4-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0-4-x86_64.pkg.tar.xz
+pacman -U /tmp/ncurses5-compat-libs-6.0-4-x86_64.pkg.tar.xz --noconfirm
 
 # install additional packages
-pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip htop --noconfirm
+pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop --noconfirm
 
 # cleanup
 yes|pacman -Scc

@@ -31,3 +31,6 @@ ENV LANG en_GB.UTF-8
 
 # add supervisor configuration file
 ADD setup/supervisor.conf /etc/supervisor.conf
+
+# run tini to manage graceful exit and zombie reaping
+ENTRYPOINT ["/usr/bin/tini", "--"]

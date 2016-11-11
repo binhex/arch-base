@@ -51,6 +51,12 @@ pacman-key --refresh-keys
 curl -o /tmp/ncurses5-compat-libs-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-x86_64.pkg.tar.xz
 pacman -U /tmp/ncurses5-compat-libs-x86_64.pkg.tar.xz --noconfirm
 
+# find latest tini release tag from github
+release_tag=$(curl -s https://github.com/krallin/tini/releases | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
+
+# download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+curl -o /usr/bin/tini -L https://github.com/krallin/tini/releases/download/"${release_tag}"/tini-amd64 && chmod +x /usr/bin/tini
+
 # install additional packages
 pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq --noconfirm
 

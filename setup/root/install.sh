@@ -19,6 +19,9 @@ pacman-db-upgrade
 # delete any local keys
 rm -rf /root/.gnupg
 
+# delete old cert files
+rm -f /etc/ssl/certs/ca-certificates.crt
+
 # force re-creation of /root/.gnupg and start dirmgr
 dirmngr </dev/null
 

@@ -19,17 +19,20 @@ pacman-db-upgrade
 # delete any local keys
 rm -rf /root/.gnupg
 
-# delete old cert files
-rm -f /etc/ssl/certs/ca-certificates.crt
-
 # force re-creation of /root/.gnupg and start dirmgr
 dirmngr </dev/null
 
 # refresh keys for pacman
 pacman-key --refresh-keys
 
-# update packages ignoring filesystem (docker limitation)
-pacman -Syu --ignore filesystem --noconfirm
+# retrieve all packages from the server, but do not install/upgrade anything (-w option)
+pacman -Syuw --noconfirm
+
+# delete old certs (bug)
+rm -f /etc/ssl/certs/ca-certificates.crt
+
+# update packages that are out of date, ignoring filesystem (docker limitation)
+pacman -Su --ignore filesystem --noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

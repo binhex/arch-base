@@ -64,11 +64,12 @@ release_tag=$(curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 -
 curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/bin/tini -L https://github.com/krallin/tini/releases/download/"${release_tag}"/tini-amd64 && chmod +x /usr/bin/tini
 
 # install additional packages
-pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq --noconfirm
+pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # cleanup
 yes|pacman -Scc
 rm -rf /usr/share/locale/*
 rm -rf /usr/share/man/*
+rm -rf /usr/share/gtk-doc/*
 rm -rf /root/*
 rm -rf /tmp/*

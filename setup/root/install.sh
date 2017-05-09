@@ -66,6 +66,9 @@ curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-tim
 # install additional packages
 pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
+# download curl wrapper script from github
+curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/local/bin/curly.sh -L https://raw.githubusercontent.com/binhex/scripts/master/shell/arch/docker/curly.sh && chmod +x /usr/local/bin/curly.sh
+
 # cleanup
 yes|pacman -Scc
 rm -rf /usr/share/locale/*

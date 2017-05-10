@@ -52,22 +52,23 @@ chmod -R 775 /home/nobody
  
 # set shell for user nobody
 chsh -s /bin/bash nobody
- 
-# force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
-curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/ncurses5-compat-libs-x86_64.pkg.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-x86_64.pkg.tar.xz
-pacman -U /tmp/ncurses5-compat-libs-x86_64.pkg.tar.xz --noconfirm
-
-# find latest tini release tag from github
-release_tag=$(curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -s https://github.com/krallin/tini/releases | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
-
-# download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/bin/tini -L https://github.com/krallin/tini/releases/download/"${release_tag}"/tini-amd64 && chmod +x /usr/bin/tini
-
-# install additional packages
-pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # download curl wrapper script from github
 curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/local/bin/curly.sh -L https://raw.githubusercontent.com/binhex/scripts/master/shell/arch/docker/curly.sh && chmod +x /usr/local/bin/curly.sh
+ 
+# force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
+curly.sh -rc 6 -rw 10 -of /tmp/ncurses5-compat.tar.xz -url https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0+20161224-1-x86_64.pkg.tar.xz
+pacman -U /tmp/ncurses5-compat.tar.xz --noconfirm
+
+# find latest tini release tag from github
+curly.sh -rc 6 -rw 10 -of /tmp/tini_release_tag -url https://github.com/krallin/tini/releases
+tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
+
+# download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+curly.sh -rc 6 -rw 10 -of /usr/bin/tini -url "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
+
+# install additional packages
+pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # cleanup
 yes|pacman -Scc

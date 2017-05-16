@@ -4,8 +4,11 @@ MAINTAINER binhex
 # additional files
 ##################
 
+# add supervisor conf file
+ADD build/*.conf /etc/supervisor.conf
+
 # add install bash script
-ADD setup/root/*.sh /root/
+ADD build/root/*.sh /root/
 
 # install app
 #############
@@ -26,11 +29,8 @@ ENV TERM xterm
 # set environment variables for language
 ENV LANG en_GB.UTF-8
 
-# additional files
-##################
-
-# add supervisor configuration file
-ADD setup/supervisor.conf /etc/supervisor.conf
+# run
+#####
 
 # run tini to manage graceful exit and zombie reaping
 ENTRYPOINT ["/usr/bin/tini", "--"]

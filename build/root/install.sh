@@ -22,6 +22,9 @@ rm -rf /root/.gnupg
 # force re-creation of /root/.gnupg and start dirmgr
 dirmngr </dev/null
 
+# initialise keys for pacman
+pacman-key --init
+
 # refresh keys for pacman
 pacman-key --refresh-keys
 

@@ -15,39 +15,53 @@ cat /etc/pacman.d/mirrorlist
 
 # reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
 rm -rf /etc/pacman.d/gnupg/ /root/.gnupg/ || true
+
+# refresh gpg keys
 gpg --refresh-keys
 
 # initialise key for pacman and populate keys 
 pacman-key --init && pacman-key --populate archlinux
 
+# force use of protocol http and ipv4 only for keyserver (defaults to hkp)
+echo "no-greeting" > /etc/pacman.d/gnupg/gpg.conf
+echo "no-permission-warning" >> /etc/pacman.d/gnupg/gpg.conf
+echo "lock-never" >> /etc/pacman.d/gnupg/gpg.conf
+echo "keyserver http://ipv4.pool.sks-keyservers.net" >> /etc/pacman.d/gnupg/gpg.conf
+echo "keyserver-options timeout=10" >> /etc/pacman.d/gnupg/gpg.conf
+
 # refresh keys for pacman
 pacman-key --refresh-keys
 
-# update packages, excluding packages not required
-pacman -Syu --ignore \
-filesystem,\
-cryptsetup,\
-device-mapper,\
-dhcpcd,\
-iproute2,\
-jfsutils,\
-libsystemd,\
-linux,\
-lvm2,\
-man-db,\
-man-pages,\
-mdadm,\
-netctl,\
-openresolv,\
-pciutils,\
-pcmciautils,\
-reiserfsprogs,\
-s-nail,\
-systemd,\
-systemd-sysvcompat,\
-usbutils,\
-xfsprogs \
---noconfirm
+# update packages installed
+pacman -Syu --noconfirm
+
+# install grep package (used to do exclusions)
+pacman -S grep --noconfirm
+
+# install base group packages with exclusions
+pacman -S $(pacman -Sgq base | \
+grep -v filesystem | \
+grep -v cryptsetup | \
+grep -v device-mapper | \
+grep -v dhcpcd | \
+grep -v iproute2 | \
+grep -v jfsutils | \
+grep -v libsystemd | \
+grep -v linux | \
+grep -v lvm2 | \
+grep -v man-db | \
+grep -v man-pages | \
+grep -v mdadm | \
+grep -v netctl | \
+grep -v pciutils | \
+grep -v pcmciautils | \
+grep -v reiserfsprogs | \
+grep -v s-nail | \
+grep -v systemd | \
+grep -v systemd-sysvcompat | \
+grep -v usbutils | \
+grep -v xfsprogs) \
+ --noconfirm
 
 # install additional packages
 pacman -S sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm

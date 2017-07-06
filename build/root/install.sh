@@ -13,29 +13,40 @@ echo 'Server = http://archive.virtapi.org/repos/'"${yesterdays_date}"'/$repo/os/
 echo "[info] content of arch mirrorlist file"
 cat /etc/pacman.d/mirrorlist
 
-# upgrade pacman db
-pacman-db-upgrade
+# reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
+rm -rf /etc/pacman.d/gnupg/ /root/.gnupg/ || true
+gpg --refresh-keys
 
-# delete any local keys
-rm -rf /root/.gnupg
-
-# force re-creation of /root/.gnupg and start dirmgr
-dirmngr </dev/null
-
-# initialise keys for pacman
-pacman-key --init
+# initialise key for pacman and populate keys 
+pacman-key --init && pacman-key --populate archlinux
 
 # refresh keys for pacman
 pacman-key --refresh-keys
 
-# retrieve all packages from the server, but do not install/upgrade anything (-w option)
-pacman -Syuw --noconfirm
-
-# delete old certs (bug)
-rm -f /etc/ssl/certs/ca-certificates.crt
-
-# update packages that are out of date, ignoring filesystem (docker limitation)
-pacman -Su --ignore filesystem --noconfirm
+# update packages, excluding packages not required
+pacman -Syu --ignore \
+filesystem,\
+cryptsetup,\
+device-mapper,\
+dhcpcd,\
+iproute2,\
+jfsutils,\
+linux,\
+lvm2,\
+man-db,\
+man-pages,\
+mdadm,\
+netctl,\
+openresolv,\
+pciutils,\
+pcmciautils,\
+reiserfsprogs,\
+s-nail,\
+systemd,\
+systemd-sysvcompat,\
+usbutils,\
+xfsprogs \
+--noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

@@ -31,6 +31,7 @@ device-mapper,\
 dhcpcd,\
 iproute2,\
 jfsutils,\
+libsystemd,\
 linux,\
 lvm2,\
 man-db,\
@@ -47,6 +48,9 @@ systemd-sysvcompat,\
 usbutils,\
 xfsprogs \
 --noconfirm
+
+# install additional packages
+pacman -S sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
@@ -80,9 +84,6 @@ tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tin
 
 # download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
 curly.sh -rc 6 -rw 10 -of /usr/bin/tini -url "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
-
-# install additional packages
-pacman -S supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # cleanup
 yes|pacman -Scc

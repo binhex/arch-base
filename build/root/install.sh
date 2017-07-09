@@ -26,13 +26,13 @@ pacman-key --init && pacman-key --populate archlinux
 echo "no-greeting" > /etc/pacman.d/gnupg/gpg.conf
 echo "no-permission-warning" >> /etc/pacman.d/gnupg/gpg.conf
 echo "lock-never" >> /etc/pacman.d/gnupg/gpg.conf
-echo "keyserver http://ipv4.pool.sks-keyservers.net" >> /etc/pacman.d/gnupg/gpg.conf
+echo "keyserver hkp://ipv4.pool.sks-keyservers.net" >> /etc/pacman.d/gnupg/gpg.conf
 echo "keyserver-options timeout=10" >> /etc/pacman.d/gnupg/gpg.conf
 
 # refresh keys for pacman
 pacman-key --refresh-keys
 
-# update packages installed
+# update packages currently installed
 pacman -Syu --noconfirm
 
 # install grep package (used to do exclusions)

@@ -77,13 +77,13 @@ usermod -g users nobody
 # add user "nobody" to secondary group "nobody" (will retain primary membership)
 usermod -a -G nobody nobody
 
-# set user "nobody" home directory (issue with pycharm)
-usermod -d /home/nobody nobody
-
 # setup env for user nobody
 mkdir -p /home/nobody
 chown -R nobody:users /home/nobody
 chmod -R 775 /home/nobody
+
+# set user "nobody" home directory (needs defining for pycharm, and possibly other apps)
+usermod -d /home/nobody nobody
  
 # set shell for user nobody
 chsh -s /bin/bash nobody

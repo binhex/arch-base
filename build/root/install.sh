@@ -87,29 +87,17 @@ usermod -d /home/nobody nobody
  
 # set shell for user nobody
 chsh -s /bin/bash nobody
-
-# download build scripts from github
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o -L https://github.com/binhex/scripts/archive/master.zip
-
-# unzip build scripts
-unzip /tmp/scripts-master.zip -d /tmp
-
-# move shell scripts to /usr/local/bin
-mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/
-
-# make scripts executable
-chmod +x /usr/local/bin/*.sh
  
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
-curly.sh -rc 6 -rw 10 -of /tmp/ncurses5-compat.tar.xz -url https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0+20161224-1-x86_64.pkg.tar.xz
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/ncurses5-compat.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0+20161224-1-x86_64.pkg.tar.xz
 pacman -U /tmp/ncurses5-compat.tar.xz --noconfirm
 
 # find latest tini release tag from github
-curly.sh -rc 6 -rw 10 -of /tmp/tini_release_tag -url https://github.com/krallin/tini/releases
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/tini_release_tag -L https://github.com/krallin/tini/releases
 tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
 
 # download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-curly.sh -rc 6 -rw 10 -of /usr/bin/tini -url "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/bin/tini -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
 
 # cleanup
 yes|pacman -Scc

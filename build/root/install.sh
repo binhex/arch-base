@@ -88,8 +88,17 @@ usermod -d /home/nobody nobody
 # set shell for user nobody
 chsh -s /bin/bash nobody
 
-# download curl wrapper script from github
-curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/local/bin/curly.sh -L https://raw.githubusercontent.com/binhex/scripts/master/shell/arch/docker/curly.sh && chmod +x /usr/local/bin/curly.sh
+# download build scripts from github
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o -L https://github.com/binhex/scripts/archive/master.zip
+
+# unzip build scripts
+unzip /tmp/scripts-master.zip -d /tmp
+
+# move shell scripts to /usr/local/bin
+mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/
+
+# make scripts executable
+chmod +x /usr/local/bin/*.sh
  
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
 curly.sh -rc 6 -rw 10 -of /tmp/ncurses5-compat.tar.xz -url https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0+20161224-1-x86_64.pkg.tar.xz

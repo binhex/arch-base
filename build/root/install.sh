@@ -64,7 +64,7 @@ grep -v xfsprogs) \
  --noconfirm
 
 # install additional packages
-pacman -S sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
+pacman -S awk sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 # set locale
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

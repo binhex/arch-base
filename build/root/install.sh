@@ -32,10 +32,22 @@ echo "keyserver-options timeout=10" >> /etc/pacman.d/gnupg/gpg.conf
 # refresh keys for pacman
 pacman-key --refresh-keys
 
+# force pacman db refresh and install sed package (used to do package folder exclusions)
+pacman -Sy sed --noconfirm
+
+# configure pacman to not extract certain folders from packages being installed
+# this is done as we strip out locale, man, docs etc when we build the arch-scratch image
+sed -i '\~\[options\]~a # Do not extract the following folders from any packages being installed\n'\
+'NoExtract   = usr/share/locale* !usr/share/locale/en* !usr/share/locale/locale.alias\n'\
+'NoExtract   = usr/share/doc*\n'\
+'NoExtract   = usr/share/man*\n'\
+'NoExtract   = usr/share/gtk-doc*\n' \
+/etc/pacman.conf
+
 # update packages currently installed
 pacman -Syu --noconfirm
 
-# install grep package (used to do exclusions)
+# install grep package (used to do package install exclusions)
 pacman -S grep --noconfirm
 
 # install base group packages with exclusions

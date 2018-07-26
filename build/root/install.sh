@@ -44,36 +44,68 @@ sed -i '\~\[options\]~a # Do not extract the following folders from any packages
 'NoExtract   = usr/share/gtk-doc*\n' \
 /etc/pacman.conf
 
+# list all packages that we want to exclude/remove
+unneeded_packages="\
+filesystem \
+cryptsetup \
+device-mapper \
+dhcpcd \
+iproute2 \
+jfsutils \
+libsystemd \
+linux \
+lvm2 \
+man-db \
+man-pages \
+mdadm \
+netctl \
+openresolv \
+pciutils \
+pcmciautils \
+reiserfsprogs \
+s-nail \
+systemd \
+systemd-sysvcompat \
+usbutils \
+xfsprogs"
+
+# split space separated string into list for install paths
+IFS=' ' read -ra unneeded_packages_list <<< "${unneeded_packages}"
+
+# construct string to ensure removal of any packages that might be part of tarball
+pacman_remove_unneeded_packages='pacman --noconfirm -Rsc'
+
+for i in "${unneeded_packages_list[@]}"; do
+
+    pacman_remove_unneeded_packages="${pacman_remove_unneeded_packages} ${i}"
+
+done
+
+echo "[info] Removing unneeded packages that might be part of the tarball..."
+echo "${pacman_remove_unneeded_packages} || true"
+eval "${pacman_remove_unneeded_packages} || true"
+
 # update packages currently installed
 pacman -Syu --noconfirm
 
 # install grep package (used to do package install exclusions)
 pacman -S grep --noconfirm
 
-# install base group packages with exclusions
-pacman -S $(pacman -Sgq base | \
-grep -v filesystem | \
-grep -v cryptsetup | \
-grep -v device-mapper | \
-grep -v dhcpcd | \
-grep -v iproute2 | \
-grep -v jfsutils | \
-grep -v libsystemd | \
-grep -v linux | \
-grep -v lvm2 | \
-grep -v man-db | \
-grep -v man-pages | \
-grep -v mdadm | \
-grep -v netctl | \
-grep -v pciutils | \
-grep -v pcmciautils | \
-grep -v reiserfsprogs | \
-grep -v s-nail | \
-grep -v systemd | \
-grep -v systemd-sysvcompat | \
-grep -v usbutils | \
-grep -v xfsprogs) \
- --noconfirm
+# construct string to install base excluding unneeded_packages
+pacman_base_install='pacman --noconfirm -S $(pacman -Sgq base |'
+
+for i in "${unneeded_packages_list[@]}"; do
+
+    pacman_base_install="${pacman_base_install} grep -v ${i} |"
+
+done
+
+# remove end pipe and close bracket instead - important required sed -E for extended regex
+pacman_base_install=$(echo "${pacman_base_install}" | sed -E 's~\s\|$~)~')
+
+echo "[info] Install base group packages with exclusions..."
+echo "${pacman_base_install} || true"
+eval "${pacman_base_install} || true"
 
 # install additional packages
 pacman -S awk sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
@@ -113,8 +145,13 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 
 # cleanup
 yes|pacman -Scc
-rm -rf /usr/share/locale/*
-rm -rf /usr/share/man/*
-rm -rf /usr/share/gtk-doc/*
-rm -rf /root/*
-rm -rf /tmp/*
+rm -rf \
+/usr/share/locale/* \
+/usr/share/man/* \
+/usr/share/gtk-doc/* \
+/root/* \
+/tmp/* \
+/var/cache/pacman/pkg/* \
+/var/lib/pacman/sync/* \
+/README \
+/etc/pacman.d/mirrorlist.pacnew

@@ -152,6 +152,4 @@ rm -rf \
 /root/* \
 /tmp/* \
 /var/cache/pacman/pkg/* \
-/var/lib/pacman/sync/* \
-/README \
-/etc/pacman.d/mirrorlist.pacnew
+/README

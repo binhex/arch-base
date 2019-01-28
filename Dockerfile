@@ -20,18 +20,11 @@ ADD build/utils/busybox/busybox /bootstrap/busybox
 RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 
 # run busybox bourne shell and use sub shell to execute busybox utils (wget, rm...)
-# to download ad extract tarball. once this is extract then delete bootstrap.
+# to download and extract tarball. 
+# once the tarball is extracted we then use bash to execute the install script to
+# install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN ["/bootstrap/sh", "-c", "rel_date=$(/bootstrap/date +%Y.%m.01) && /bootstrap/wget -O /bootstrap/archlinux.tar.gz http://archlinux.de-labrusse.fr/iso/latest/archlinux-bootstrap-${rel_date}-x86_64.tar.gz && /bootstrap/tar -xvf /bootstrap/archlinux.tar.gz --overwrite --strip-components=1 -C / ; /bootstrap/rm -rf /bootstrap /.dockerenv /.dockerinit /usr/share/info/*"]
-
-# install app
-#############
-
-# run bash script to update base image, set locale, install supervisor and core tools and then cleanup.
-# note, this is done as a separate build step as the build step above has dns resolution failure 
-# (busybox wget is not affected) possibly due to tar extraction overwriting /etc/resolv.conf?
-RUN chmod +x /root/*.sh && \
-	/bin/bash /root/install.sh
+RUN ["/bootstrap/sh", "-c", "rel_date=$(/bootstrap/date +%Y.%m.01) && /bootstrap/wget -O /bootstrap/archlinux.tar.gz http://archlinux.de-labrusse.fr/iso/latest/archlinux-bootstrap-${rel_date}-x86_64.tar.gz && /bootstrap/tar -xvf /bootstrap/archlinux.tar.gz --overwrite --strip-components=1 -C / ; /bootstrap/rm -rf /bootstrap /.dockerenv /.dockerinit /usr/share/info/* && /bin/bash -c 'chmod +x /root/*.sh && /bin/bash /root/install.sh'"]
 
 # env
 #####

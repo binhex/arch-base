@@ -16,6 +16,13 @@ cat /etc/pacman.d/mirrorlist
 # reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
 rm -rf /etc/pacman.d/gnupg/ /root/.gnupg/ || true
 
+# dns resolution reconfigure is required due to the tarball extraction 
+# overwriting the /etc/resolv.conf, thus we then need to fix this up 
+# before we can continue to build the image.
+echo "[info] Setting DNS resolvers to Cloudflare..."
+echo "nameserver 1.1.1.1" > /etc/resolv.conf
+echo "nameserver 1.0.0.1" >> /etc/resolv.conf
+
 # refresh gpg keys
 gpg --refresh-keys
 
@@ -29,7 +36,7 @@ echo "lock-never" >> /etc/pacman.d/gnupg/gpg.conf
 echo "keyserver hkp://ipv4.pool.sks-keyservers.net" >> /etc/pacman.d/gnupg/gpg.conf
 echo "keyserver-options timeout=10" >> /etc/pacman.d/gnupg/gpg.conf
 
-# refresh keys for pacman
+echo "[info] refresh keys for pacman..."
 pacman-key --refresh-keys
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
@@ -85,7 +92,7 @@ echo "[info] Removing unneeded packages that might be part of the tarball..."
 echo "${pacman_remove_unneeded_packages} || true"
 eval "${pacman_remove_unneeded_packages} || true"
 
-# update packages currently installed
+echo "[info] Updating packages currently installed..."
 pacman -Syu --noconfirm
 
 # install grep package (used to do package install exclusions)
@@ -107,10 +114,10 @@ echo "[info] Install base group packages with exclusions..."
 echo "${pacman_base_install} || true"
 eval "${pacman_base_install} || true"
 
-# install additional packages
+echo "[info] install additional packages..."
 pacman -S awk sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
-# set locale
+echo "[info] set locale..."
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen
 locale-gen
 echo LANG="en_GB.UTF-8" > /etc/locale.conf

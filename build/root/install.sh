@@ -16,8 +16,8 @@ cat /etc/pacman.d/mirrorlist
 # reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
 rm -rf /etc/pacman.d/gnupg/ /root/.gnupg/ || true
 
-# dns resolution reconfigure is required due to the tarball extraction 
-# overwriting the /etc/resolv.conf, thus we then need to fix this up 
+# dns resolution reconfigure is required due to the tarball extraction
+# overwriting the /etc/resolv.conf, thus we then need to fix this up
 # before we can continue to build the image.
 echo "[info] Setting DNS resolvers to Cloudflare..."
 echo "nameserver 1.1.1.1" > /etc/resolv.conf
@@ -36,8 +36,14 @@ echo "lock-never" >> /etc/pacman.d/gnupg/gpg.conf
 echo "keyserver hkp://ipv4.pool.sks-keyservers.net" >> /etc/pacman.d/gnupg/gpg.conf
 echo "keyserver-options timeout=10" >> /etc/pacman.d/gnupg/gpg.conf
 
-echo "[info] refresh keys for pacman..."
-pacman-key --refresh-keys
+# perform pacman refresh with retries (required as keyservers are unreliable)
+count=0
+echo "[info] refreshing keys for pacman..."
+until pacman-key --refresh-keys || (( count++ >= 6 ))
+do
+	echo "[warn] failed to refresh keys for pacman, retrying in 30 seconds..."
+	sleep 30s
+done
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
 pacman -Sy sed --noconfirm
@@ -83,9 +89,7 @@ IFS=' ' read -ra unneeded_packages_list <<< "${unneeded_packages}"
 pacman_remove_unneeded_packages='pacman --noconfirm -Rsc'
 
 for i in "${unneeded_packages_list[@]}"; do
-
-    pacman_remove_unneeded_packages="${pacman_remove_unneeded_packages} ${i}"
-
+	pacman_remove_unneeded_packages="${pacman_remove_unneeded_packages} ${i}"
 done
 
 echo "[info] Removing unneeded packages that might be part of the tarball..."
@@ -139,7 +143,7 @@ usermod -d /home/nobody nobody
 # set shell for user nobody
 chsh -s /bin/bash nobody
  
-# force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed onced all apps have switched over to ncurses 6.x)
+# force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/ncurses5-compat.tar.xz -L https://github.com/binhex/arch-packages/raw/master/compiled/ncurses5-compat-libs-6.0+20161224-1-x86_64.pkg.tar.xz
 pacman -U /tmp/ncurses5-compat.tar.xz --noconfirm
 

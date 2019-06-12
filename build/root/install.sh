@@ -156,6 +156,7 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 
 # cleanup
 yes|pacman -Scc
+pacman --noconfirm -Rns $(pacman -Qtdq) 2> /dev/null || true
 rm -rf \
 /usr/share/locale/* \
 /usr/share/man/* \

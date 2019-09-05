@@ -20,8 +20,8 @@ rm -rf /etc/pacman.d/gnupg/ /root/.gnupg/ || true
 # overwriting the /etc/resolv.conf, thus we then need to fix this up
 # before we can continue to build the image.
 echo "[info] Setting DNS resolvers to Cloudflare..."
-echo "nameserver 1.1.1.1" > /etc/resolv.conf
-echo "nameserver 1.0.0.1" >> /etc/resolv.conf
+echo "nameserver 1.1.1.1" > /etc/resolv.conf || true
+echo "nameserver 1.0.0.1" >> /etc/resolv.conf || true
 
 # refresh gpg keys
 gpg --refresh-keys

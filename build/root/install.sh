@@ -119,7 +119,7 @@ echo "${pacman_base_install} || true"
 eval "${pacman_base_install} || true"
 
 echo "[info] install additional packages..."
-pacman -S awk sed supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
+pacman -S awk sed gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 echo "[info] set locale..."
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

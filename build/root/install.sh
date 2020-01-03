@@ -99,27 +99,8 @@ eval "${pacman_remove_unneeded_packages} || true"
 echo "[info] Updating packages currently installed..."
 pacman -Syu --noconfirm
 
-# install grep package (used to do package install exclusions)
-pacman -S grep --noconfirm
-
-# construct string to install base excluding unneeded_packages
-pacman_base_install='pacman --noconfirm -S $(pacman -Sgq base |'
-
-for i in "${unneeded_packages_list[@]}"; do
-
-    pacman_base_install="${pacman_base_install} grep -v ${i} |"
-
-done
-
-# remove end pipe and close bracket instead - important required sed -E for extended regex
-pacman_base_install=$(echo "${pacman_base_install}" | sed -E 's~\s\|$~)~')
-
-echo "[info] Install base group packages with exclusions..."
-echo "${pacman_base_install} || true"
-eval "${pacman_base_install} || true"
-
-echo "[info] install additional packages..."
-pacman -S awk sed gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
+echo "[info] Install base group and additional packages..."
+pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
 
 echo "[info] set locale..."
 echo en_GB.UTF-8 UTF-8 > /etc/locale.gen

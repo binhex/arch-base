@@ -161,8 +161,8 @@ rm -rf /root/* \
 /var/cache/pacman/pkg/* \
 /usr/lib/firmware \
 /usr/lib/modules \
-/bootstrap \
 /.dockerenv \
 /.dockerinit \
 /usr/share/info/* \
-/README
+/README \
+/bootstrap

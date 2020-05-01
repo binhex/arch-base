@@ -3,12 +3,14 @@
 # exit script if return code != 0
 set -e
 
-# construct yesterdays date (cannot use todays as archive wont exist) and set url for archive
-yesterdays_date=$(date -d "yesterday" +%Y/%m/%d)
+# construct snapshot date (cannot use todays as archive wont exist) and set url for archive
+# note for arch linux arm archive repo that the snapshot date has to be at least 2 days
+# previous as the mirror from live to the archive for arm packages is slow
+snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
-# now set pacman to use snapshot for packages for yesterdays date
-echo 'Server = https://archive.archlinux.org/repos/'"${yesterdays_date}"'/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-echo 'Server = http://archive.virtapi.org/repos/'"${yesterdays_date}"'/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+# now set pacman to use snapshot for packages for snapshot date
+echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+echo 'Server = http://archive.virtapi.org/repos/'"${snapshot_date}"'/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 
 echo "[info] content of arch mirrorlist file"
 cat /etc/pacman.d/mirrorlist

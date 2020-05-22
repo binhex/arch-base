@@ -133,7 +133,7 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 pacman -U '/tmp/coreutils.tar.xz' --noconfirm
 
 # add coreutils to pacman ignore list to prevent it being upgraded
-sed -i -e 's~#IgnorePkg =.*~IgnorePkg = coreutils~g' '/etc/pacman.conf'
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils~g' '/etc/pacman.conf'
 # /delme once fixed!!
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)

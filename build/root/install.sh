@@ -140,12 +140,12 @@ sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils~g' '/etc/pacman.conf'
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/ncurses5-compat.tar.xz -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/ncurses5-compat-libs.tar.xz"
 pacman -U '/tmp/ncurses5-compat.tar.xz' --noconfirm
 
-# find latest tini release tag from github
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/tini_release_tag -L "https://github.com/krallin/tini/releases"
-tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
+# find latest s6-overlay release tag from github
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/s6_release_tag -L "https://github.com/just-containers/s6-overlay/releases"
+s6_release_tag=$(cat /tmp/s6_release_tag | grep -P -o -m 1 '(?<=/just-containers/s6-overlay/releases/tag/)[^"]+')
 
-# download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/bin/tini -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
+# download s6-overlay, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/s6-overlay-amd64.tar.gz -L "https://github.com/just-containers/s6-overlay/releases/download/${s6_release_tag}/s6-overlay-amd64.tar.gz" && tar xzf /tmp/s6-overlay-amd64.tar.gz -C / --exclude="./bin" && tar xzf /tmp/s6-overlay-amd64.tar.gz -C /usr ./bin
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

@@ -2,7 +2,8 @@ name: Publish Docker image to GitHub Package Registry
 on: push
 jobs:
   build:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
 
     - name: Copy Repo Files

@@ -21,9 +21,9 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # dns resolution reconfigure is required due to the tarball extraction
 # overwriting the /etc/resolv.conf, thus we then need to fix this up
 # before we can continue to build the image.
-#echo "[info] Setting DNS resolvers to Cloudflare..."
-#echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
-#echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
+echo "[info] Setting DNS resolvers to Cloudflare..."
+echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
+echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
 
 # refresh gpg keys
 gpg --refresh-keys
@@ -61,6 +61,7 @@ sed -i '\~\[options\]~a # Do not extract the following folders from any packages
 
 # list all packages that we want to exclude/remove
 unneeded_packages="\
+filesystem \
 cryptsetup \
 device-mapper \
 dhcpcd \
@@ -127,7 +128,7 @@ chsh -s /bin/bash nobody
  
 # delme once fixed!!
 # force downgrade of coreutils - fixes permission denied issue when building on docker hub
-# https://github.com/archlinux/archlinux-docker/issues/32
+# https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/coreutils.tar.xz -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/coreutils.tar.xz"
 pacman -U '/tmp/coreutils.tar.xz' --noconfirm
 

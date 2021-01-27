@@ -38,6 +38,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
+          allow: network.host,security.insecure
           tags: |
             binhex/arch-base:test
             binhex/arch-base:1.0.0

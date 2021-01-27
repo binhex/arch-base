@@ -3,6 +3,8 @@
 # exit script if return code != 0
 set -e
 
+df -h
+mount
 mount -o remount,rw /etc/resolv.conf
 mount -o remount,rw /etc/hosts
 

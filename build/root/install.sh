@@ -3,9 +3,6 @@
 # exit script if return code != 0
 set -e
 
-mount
-
-
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive
 # note for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
@@ -24,9 +21,9 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # dns resolution reconfigure is required due to the tarball extraction
 # overwriting the /etc/resolv.conf, thus we then need to fix this up
 # before we can continue to build the image.
-echo "[info] Setting DNS resolvers to Cloudflare..."
-echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
-echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
+#echo "[info] Setting DNS resolvers to Cloudflare..."
+#echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
+#echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
 
 # refresh gpg keys
 gpg --refresh-keys

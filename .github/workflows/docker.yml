@@ -39,7 +39,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            user/app:test
-            user/app:1.0.0
-            ghcr.io/user/app:test
-            ghcr.io/user/app:1.0.0
+            binhex/arch-base:test
+            binhex/arch-base:1.0.0
+            ghcr.io/binhex/arch-base:test
+            ghcr.io/binhex/arch-base:1.0.0

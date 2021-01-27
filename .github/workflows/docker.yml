@@ -36,10 +36,10 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
+          platforms: linux/amd64
           push: true
           tags: |
-            user/app:latest
+            user/app:test
             user/app:1.0.0
-            ghcr.io/user/app:latest
+            ghcr.io/user/app:test
             ghcr.io/user/app:1.0.0

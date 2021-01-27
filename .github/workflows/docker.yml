@@ -15,7 +15,7 @@ jobs:
       id: docker
       with:
         IMAGE_NAME: 'arch-base'
-        TAG: 'test'
+        TAG: 'latest'
         DOCKERFILE_PATH: 'Dockerfile'
         BUILD_CONTEXT: '.'
       env:

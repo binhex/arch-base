@@ -3,10 +3,8 @@
 # exit script if return code != 0
 set -e
 
-df -h
 mount
-mount -o remount,rw /etc/resolv.conf
-mount -o remount,rw /etc/hosts
+
 
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive
 # note for arch linux arm archive repo that the snapshot date has to be at least 2 days

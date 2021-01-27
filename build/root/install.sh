@@ -61,7 +61,6 @@ sed -i '\~\[options\]~a # Do not extract the following folders from any packages
 
 # list all packages that we want to exclude/remove
 unneeded_packages="\
-filesystem \
 cryptsetup \
 device-mapper \
 dhcpcd \

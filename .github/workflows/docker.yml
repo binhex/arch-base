@@ -41,5 +41,5 @@ jobs:
           tags: |
             binhex/arch-base:test
             binhex/arch-base:1.0.0
-            docker.pkg.github.com/binhex/arch-base:test
-            docker.pkg.github.com/binhex/arch-base:1.0.0
+            docker.pkg.github.com/arch-base:test
+            docker.pkg.github.com/arch-base:1.0.0

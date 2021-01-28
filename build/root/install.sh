@@ -3,12 +3,6 @@
 # exit script if return code != 0
 set -e
 
-touch /tmp/resolv.conf
-ln -fs /tmp/resolv.conf /etc/resolv.conf
-
-touch /tmp/hosts
-ln -fs /tmp/hosts /etc/hosts
-
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive
 # note for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
@@ -36,6 +30,12 @@ gpg --refresh-keys
 
 # initialise key for pacman and populate keys 
 pacman-key --init && pacman-key --populate archlinux
+
+touch /tmp/resolv.conf
+ln -fs /tmp/resolv.conf /etc/resolv.conf
+
+touch /tmp/hosts
+ln -fs /tmp/hosts /etc/hosts
 
 # force use of protocol http and ipv4 only for keyserver (defaults to hkp)
 echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'

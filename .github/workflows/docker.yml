@@ -40,5 +40,4 @@ jobs:
           push: true
           tags: |
             binhex/arch-base:test
-            ghcr.io/binhex/arch-base:test
             ghcr.io/binhex/arch-base:latest

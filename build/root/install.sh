@@ -21,21 +21,15 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # dns resolution reconfigure is required due to the tarball extraction
 # overwriting the /etc/resolv.conf, thus we then need to fix this up
 # before we can continue to build the image.
-echo "[info] Setting DNS resolvers to Cloudflare..."
-echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
-echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
+#echo "[info] Setting DNS resolvers to Cloudflare..."
+#echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
+#echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
 
 # refresh gpg keys
 gpg --refresh-keys
 
 # initialise key for pacman and populate keys 
 pacman-key --init && pacman-key --populate archlinux
-
-touch /tmp/resolv.conf
-ln -fs /tmp/resolv.conf /etc/resolv.conf
-
-touch /tmp/hosts
-ln -fs /tmp/hosts /etc/hosts
 
 # force use of protocol http and ipv4 only for keyserver (defaults to hkp)
 echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'

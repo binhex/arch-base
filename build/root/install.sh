@@ -61,6 +61,7 @@ sed -i '\~\[options\]~a # Do not extract the following folders from any packages
 
 # list all packages that we want to exclude/remove
 unneeded_packages="\
+filesystem \
 cryptsetup \
 device-mapper \
 dhcpcd \
@@ -97,14 +98,11 @@ echo "[info] Removing unneeded packages that might be part of the tarball..."
 echo "${pacman_remove_unneeded_packages} || true"
 eval "${pacman_remove_unneeded_packages} || true"
 
-# add filesystem to pacman ignore list to prevent it being upgraded
-# this is required to prevent buildz issues due to reasd only volume
-# mount for /etc/hosts and /etc/resolv.conf
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = filesystem~g' '/etc/pacman.conf'
-# /delme once fixed!!
-
 echo "[info] Updating packages currently installed..."
-pacman -Syu --noconfirm
+
+# note true is required as buildx will cause failure for filesystem 
+# package to upgrade, due to read only for /etc/resolv.conf and /etc/hosts
+pacman -Syu --noconfirm || true
 
 echo "[info] Install base group and additional packages..."
 pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm

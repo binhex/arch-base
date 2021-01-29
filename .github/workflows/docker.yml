@@ -1,4 +1,4 @@
-name: docker-tag-triggered
+name: docker-tag-triggered-prod
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  gcr-dockerhub-registries:
+  gcr-dockerhub-build-publish:
     runs-on: ubuntu-latest
     steps:
       -

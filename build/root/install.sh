@@ -98,11 +98,20 @@ echo "[info] Removing unneeded packages that might be part of the tarball..."
 echo "${pacman_remove_unneeded_packages} || true"
 eval "${pacman_remove_unneeded_packages} || true"
 
-echo "[info] Updating packages currently installed..."
+echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
-# note true is required as buildx will cause failure for filesystem 
-# package to upgrade, due to read only for /etc/resolv.conf and /etc/hosts
-pacman -Syu --noconfirm || true
+# delme once fixed!!
+# add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub - 
+# https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
+# /delme once fixed!!
+#
+# add filesystem to pacman ignore list to prevent buildx issues with
+# /etc/hosts and /etc/resolv.conf being read only, see issue -
+# https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem~g' '/etc/pacman.conf'
+
+echo "[info] Updating packages currently installed..."
+pacman -Syu --noconfirm 
 
 echo "[info] Install base group and additional packages..."
 pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 --noconfirm
@@ -134,9 +143,6 @@ chsh -s /bin/bash nobody
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/coreutils.tar.xz -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/coreutils.tar.xz"
 pacman -U '/tmp/coreutils.tar.xz' --noconfirm
-
-# add coreutils to pacman ignore list to prevent it being upgraded
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils~g' '/etc/pacman.conf'
 # /delme once fixed!!
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)

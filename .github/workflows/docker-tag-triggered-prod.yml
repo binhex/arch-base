@@ -1,11 +1,9 @@
 name: docker-tag-triggered-prod
 
 on:
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter tag name for test/dev image'
-        default: 'test'
+  push:
+    tags:
+      - '*'
 
 jobs:
   gcr-dockerhub-build-publish:
@@ -51,5 +49,17 @@ jobs:
         run: |
           docker build \
             --tag ${{ github.repository }}:latest \
+            --tag ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
             --tag ghcr.io/${{ github.repository }}:latest \
+            --tag ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
             .
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push \
+           ${{ github.repository }}:latest \
+           ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+      - name: Push Docker image to GitHub Container Registry (GHCR)
+        run: |
+          docker push \
+            ghcr.io/${{ github.repository }}:latest \
+            ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}

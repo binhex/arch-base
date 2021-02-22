@@ -49,8 +49,9 @@ jobs:
         id: identify_tag
       - name: Build Docker image and tag
         run: |
-          docker build . --tag \
+          docker build --tag \
             ${{ github.repository }}:latest \
             ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
             ghcr.io/${{ github.repository }}:latest \
-            ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+            ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
+            .

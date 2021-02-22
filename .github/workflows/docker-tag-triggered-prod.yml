@@ -46,4 +46,9 @@ jobs:
         run: echo "##[set-output name=tag;]$(tag_name=${GITHUB_REF#refs/tags/} && echo "${tag_name//+/-}")"
         id: identify_tag
       - name: Build Docker image and tag
-        run: docker build . --tag ${{ github.repository }}:latest ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+        run: |
+          docker build . --tag \
+            ${{ github.repository }}:latest \
+            ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
+            ghcr.io/${{ github.repository }}:latest \
+            ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}

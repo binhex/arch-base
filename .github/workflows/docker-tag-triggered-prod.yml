@@ -1,9 +1,11 @@
 name: docker-tag-triggered-prod
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Enter tag name for test/dev image'
+        default: 'test'
 
 jobs:
   gcr-dockerhub-build-publish:

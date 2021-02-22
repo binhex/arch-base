@@ -55,11 +55,9 @@ jobs:
             .
       - name: Push Docker image to Docker Hub
         run: |
-          docker push \
-           ${{ github.repository }}:latest \
-           ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+          docker push ${{ github.repository }}:latest
+          docker push ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
       - name: Push Docker image to GitHub Container Registry (GHCR)
         run: |
-          docker push \
-            ghcr.io/${{ github.repository }}:latest \
-            ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}

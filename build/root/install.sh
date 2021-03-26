@@ -107,11 +107,7 @@ echo "[info] Adding required packages to pacman ignore package list to prevent u
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
 #
-# add glibc to pacman ignore list to prevent glibc issues with older versions of docker
-# runc causing permission denied and inability to build image, see issue
-# - https://bugs.archlinux.org/index.php?do=details&task_id=69563
-
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem glibc~g' '/etc/pacman.conf'
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem~g' '/etc/pacman.conf'
 
 echo "[info] Displaying contents of pacman config file, showing ignored packages..."
 cat '/etc/pacman.conf'
@@ -149,13 +145,6 @@ chsh -s /bin/bash nobody
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/coreutils.tar.xz" -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/coreutils.tar.xz"
 pacman -U '/tmp/coreutils.tar.xz' --noconfirm
-# /delme once fixed!!
-
-# delme once fixed!!
-# force downgrade of glibc - fixes old docker runc, runc verison 1.0.0-rc93 or newer does NOT require this fix
-# https://bugs.archlinux.org/index.php?do=details&task_id=69563
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/glibc.tar.zst" -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/glibc.tar.zst"
-pacman -U '/tmp/glibc.tar.zst' --noconfirm
 # /delme once fixed!!
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)

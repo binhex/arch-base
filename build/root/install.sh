@@ -100,15 +100,21 @@ eval "${pacman_remove_unneeded_packages} || true"
 
 echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
-# delme once fixed!!
 # add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub - 
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
-# /delme once fixed!!
 #
 # add filesystem to pacman ignore list to prevent buildx issues with
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem~g' '/etc/pacman.conf'
+#
+# add glibc to pacman ignore list to prevent glibc issues with older versions of docker
+# runc causing permission denied and inability to build image, see issue
+# - https://bugs.archlinux.org/index.php?do=details&task_id=69563
+
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem glibc~g' '/etc/pacman.conf'
+
+echo "[info] Displaying contents of pacman config file, showing ignored packages..."
+cat '/etc/pacman.conf'
 
 echo "[info] Updating packages currently installed..."
 pacman -Syu --noconfirm 
@@ -141,20 +147,27 @@ chsh -s /bin/bash nobody
 # delme once fixed!!
 # force downgrade of coreutils - fixes permission denied issue when building on docker hub
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/coreutils.tar.xz -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/coreutils.tar.xz"
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/coreutils.tar.xz" -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/coreutils.tar.xz"
 pacman -U '/tmp/coreutils.tar.xz' --noconfirm
 # /delme once fixed!!
 
+# delme once fixed!!
+# force downgrade of glibc - fixes old docker runc, runc verison 1.0.0-rc93 or newer does NOT require this fix
+# https://bugs.archlinux.org/index.php?do=details&task_id=69563
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/glibc.tar.zst" -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/glibc.tar.zst"
+pacman -U '/tmp/glibc.tar.zst' --noconfirm
+# /delme once fixed!!
+
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/ncurses5-compat.tar.xz -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/ncurses5-compat-libs.tar.xz"
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/ncurses5-compat.tar.xz" -L "https://github.com/binhex/arch-packages/raw/master/compiled/x86-64/ncurses5-compat-libs.tar.xz"
 pacman -U '/tmp/ncurses5-compat.tar.xz' --noconfirm
 
 # find latest tini release tag from github
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/tini_release_tag -L "https://github.com/krallin/tini/releases"
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/tini_release_tag" -L "https://github.com/krallin/tini/releases"
 tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
 
 # download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /usr/bin/tini -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x /usr/bin/tini
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x "/usr/bin/tini"
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

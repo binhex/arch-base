@@ -1,4 +1,4 @@
-name: docker-manual-triggered-test
+name: docker-manual-triggered-test 
 
 on:
   workflow_dispatch:

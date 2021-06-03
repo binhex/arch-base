@@ -47,17 +47,11 @@ jobs:
           command: |
             export
       - name: Build Docker image and tag
-        uses: nick-invision/retry@v2.4.0
-        with:
-          timeout_minutes: 60
-          max_attempts: 3
-          retry_wait_seconds: 120
-          retry_on: error
-          command: |
-            docker build \
-              --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
-              --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
-              .
+        # note this step MUST be run as a standard run command do NOT use retry github action
+          docker build \
+            --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
+            --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
+            .
       - name: Push Docker image to Docker Hub
         uses: nick-invision/retry@v2.4.0
         with:

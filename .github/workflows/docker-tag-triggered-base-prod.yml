@@ -63,8 +63,10 @@ jobs:
         shell: bash
         run: |
           docker build \
-            --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
-            --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
+            --tag ${{ github.repository }}:latest \
+            --tag ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
+            --tag ghcr.io/${{ github.repository }}:latest \
+            --tag ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
             .
       - name: Push Docker image to Docker Hub
         uses: nick-invision/retry@v2.4.0

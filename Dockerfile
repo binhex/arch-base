@@ -1,5 +1,5 @@
 FROM scratch
-MAINTAINER binhex
+LABEL org.opencontainers.image.authors="binhex"
 
 # additional files
 ##################
@@ -20,7 +20,7 @@ ADD build/utils/busybox/busybox /bootstrap/busybox
 RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 
 # run busybox bourne shell and use sub shell to execute busybox utils (wget, rm...)
-# to download and extract tarball. 
+# to download and extract tarball.
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh

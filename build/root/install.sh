@@ -28,7 +28,7 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # refresh gpg keys
 gpg --refresh-keys
 
-# initialise key for pacman and populate keys 
+# initialise key for pacman and populate keys
 pacman-key --init && pacman-key --populate archlinux
 
 # force use of protocol http and ipv4 only for keyserver (defaults to hkp)
@@ -100,20 +100,20 @@ eval "${pacman_remove_unneeded_packages} || true"
 
 echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
-# add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub - 
+# add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub -
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
 #
 # add filesystem to pacman ignore list to prevent buildx issues with
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
 #
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = coreutils filesystem~g' '/etc/pacman.conf'
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = filesystem~g' '/etc/pacman.conf'
 
 echo "[info] Displaying contents of pacman config file, showing ignored packages..."
 cat '/etc/pacman.conf'
 
 echo "[info] Updating packages currently installed..."
-pacman -Syu --noconfirm 
+pacman -Syu --noconfirm
 
 echo "[info] Install base group and additional packages..."
 pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.0 rsync --noconfirm
@@ -136,15 +136,15 @@ chmod -R 775 '/home/nobody'
 
 # set user "nobody" home directory (needs defining for pycharm, and possibly other apps)
 usermod -d /home/nobody nobody
- 
+
 # set shell for user nobody
 chsh -s /bin/bash nobody
- 
+
 # delme once fixed!!
 # force downgrade of coreutils - fixes permission denied issue when building on docker hub
 # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/coreutils.tar.xz" -L "https://github.com/binhex/packages/raw/master/compiled/x86-64/coreutils.tar.xz"
-pacman -U '/tmp/coreutils.tar.xz' --noconfirm
+#curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/coreutils.tar.xz" -L "https://github.com/binhex/packages/raw/master/compiled/x86-64/coreutils.tar.xz"
+#pacman -U '/tmp/coreutils.tar.xz' --noconfirm
 # /delme once fixed!!
 
 # force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)

@@ -33,7 +33,7 @@ jobs:
           command: |
             export
       - name: Build Docker image and tag
-        # note this step MUST be run as a standard run command do NOT use retry github action
+          # note this step MUST be run as a standard run command do NOT use retry github action
           docker build \
             --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
             --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \

@@ -32,7 +32,6 @@ jobs:
           retry_wait_seconds: 120
           command: |
             export
-      # note this step MUST be run as a standard run command do NOT use retry github action
       - name: Build Docker image and tag
           docker build \
             --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \

@@ -1,4 +1,4 @@
-name: docker-tag-triggered-base-prod
+name: docker-tag-triggered-base-schedule
 
 on:
   schedule:

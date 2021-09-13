@@ -47,17 +47,16 @@ jobs:
           retry_wait_seconds: 120
           command: |
             tag_name=$(date +"%Y%m%d01")
-            echo "${tag_name}"
-        id: identify_tag
+            echo "::set-env name=TAG_NAME::${tag_name}"
       - name: Build Docker image and tag
         # note this step MUST be run as a standard run command do NOT use retry github action
         shell: bash
         run: |
           docker build \
             --tag ${{ github.repository }}:latest \
-            --tag ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
+            --tag ${{ github.repository }}:"${TAG_NAME}" \
             --tag ghcr.io/${{ github.repository }}:latest \
-            --tag ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }} \
+            --tag ghcr.io/${{ github.repository }}:"${TAG_NAME}" \
             .
       - name: Push Docker image to Docker Hub
         uses: nick-invision/retry@v2.4.0
@@ -67,7 +66,7 @@ jobs:
           retry_wait_seconds: 120
           command: |
             docker push ${{ github.repository }}:latest
-            docker push ${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+            docker push ${{ github.repository }}:"${TAG_NAME}"
       - name: Push Docker image to GitHub Container Registry (GHCR)
         uses: nick-invision/retry@v2.4.0
         with:
@@ -76,7 +75,7 @@ jobs:
           retry_wait_seconds: 120
           command: |
             docker push ghcr.io/${{ github.repository }}:latest
-            docker push ghcr.io/${{ github.repository }}:${{ steps.identify_tag.outputs.tag }}
+            docker push ghcr.io/${{ github.repository }}:"${TAG_NAME}"
       - name: Create releases for all intermediate images
         uses: nick-invision/retry@v2.4.0
         with:
@@ -92,5 +91,5 @@ jobs:
 
             # process int repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.CR_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${{ steps.identify_tag.outputs.tag }}"'","target_commitish": "master","name": "'"${{ steps.identify_tag.outputs.tag }}"'","body": "API/URL triggered release","draft": false,"prerelease": false}'
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.CR_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${TAG_NAME}"'","target_commitish": "master","name": "'"${TAG_NAME}"'","body": "API/URL triggered release","draft": false,"prerelease": false}'
             done

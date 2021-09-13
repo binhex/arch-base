@@ -46,8 +46,7 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            tag_name=$(date +"%Y%m%d01")
-            echo "${tag_name}"
+            echo "##[set-output name=tag;]$(tag_name=${date +"%Y%m%d01"}"
         id: identify_tag
       - name: Build Docker image and tag
         # note this step MUST be run as a standard run command do NOT use retry github action

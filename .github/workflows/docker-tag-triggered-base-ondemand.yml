@@ -1,0 +1,86 @@
+name: docker-tag-triggered-base-prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Enter tag name for test/dev image'
+        default: 'test'
+
+jobs:
+  gcr-dockerhub-build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Sync GitHub README.md with Docker Hub
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }} # NOTE: This MUST be the password NOT the token
+          repository: ${{ github.repository }}
+          short-description: ${{ github.event.repository.description }}
+      - name: Show Runners environment (debug)
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            export
+      - name: Build Docker image and tag
+        # note this step MUST be run as a standard run command do NOT use retry github action
+        shell: bash
+        run: |
+          docker build \
+            --tag ${{ github.repository }}:latest \
+            --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
+            --tag ghcr.io/${{ github.repository }}:latest \
+            --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
+            .
+      - name: Push Docker image to Docker Hub
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            docker push ${{ github.repository }}:latest
+            docker push ${{ github.repository }}:${{ github.event.inputs.tags }}
+      - name: Push Docker image to GitHub Container Registry (GHCR)
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            docker push ghcr.io/${{ github.repository }}:latest
+            docker push ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }}
+      - name: Create releases for all intermediate images
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            # construct list of intermediate repos to trigger builds for
+            int_repos="arch-int-vpn,arch-int-gui"
+
+            # split comma separated string into array
+            IFS=',' read -ra int_repos_array <<< "${int_repos}"
+
+            # process int repos and create release (triggers action to build)
+            for int_repo in "${int_repos_array[@]}"; do
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${{ github.event.inputs.tags }}"'","target_commitish": "master","name": "API/URL triggered release","body": "'"${{ github.event.inputs.tags }}"'","draft": false,"prerelease": false}'
+            done

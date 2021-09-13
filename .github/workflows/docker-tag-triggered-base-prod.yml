@@ -47,7 +47,7 @@ jobs:
           retry_wait_seconds: 120
           command: |
             tag_name=$(date +"%Y%m%d01")
-            echo "${tag_nae}"
+            echo "${tag_name}"
         id: identify_tag
       - name: Build Docker image and tag
         # note this step MUST be run as a standard run command do NOT use retry github action

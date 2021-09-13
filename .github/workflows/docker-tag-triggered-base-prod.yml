@@ -40,14 +40,10 @@ jobs:
           command: |
             export
       - name: Construct tag name from current date
-        uses: nick-invision/retry@v2.4.0
-        with:
-          timeout_minutes: 5
-          max_attempts: 3
-          retry_wait_seconds: 120
-          command: |
-            tag_name=$(date +"%Y%m%d01")
-            echo "TAG_NAME=${tag_name}" >> "${GITHUB_ENV}"
+        shell: bash
+        run: |
+          tag_name=$(date +"%Y%m%d01")
+          echo "TAG_NAME=${tag_name}" >> "${GITHUB_ENV}"
       - name: Build Docker image and tag
         # note this step MUST be run as a standard run command do NOT use retry github action
         shell: bash
@@ -91,5 +87,5 @@ jobs:
 
             # process int repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.CR_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${TAG_NAME}"'","target_commitish": "master","name": "'"${TAG_NAME}"'","body": "API/URL triggered release","draft": false,"prerelease": false}'
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${TAG_NAME}"'","target_commitish": "master","name": "API/URL triggered release","body": "'"${TAG_NAME}"'","draft": false,"prerelease": false}'
             done

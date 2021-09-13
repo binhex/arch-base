@@ -47,7 +47,7 @@ jobs:
           retry_wait_seconds: 120
           command: |
             tag_name=$(date +"%Y%m%d01")
-            echo "::set-env name=TAG_NAME::${tag_name}"
+            echo "TAG_NAME=${tag_name}" >> "${GITHUB_ENV}"
       - name: Build Docker image and tag
         # note this step MUST be run as a standard run command do NOT use retry github action
         shell: bash

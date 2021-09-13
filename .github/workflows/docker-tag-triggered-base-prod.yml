@@ -1,11 +1,8 @@
 name: docker-tag-triggered-base-prod
 
 on:
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter tag name for test/dev image'
-        default: 'test'
+  schedule:
+  - cron: "0 0 7 1,3,5,7,9,12 *"
 
 jobs:
   gcr-dockerhub-build-publish:

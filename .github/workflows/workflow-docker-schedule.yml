@@ -1,4 +1,4 @@
-name: docker-tag-triggered-base-schedule
+name: workflow-docker-schedule
 
 on:
   schedule:

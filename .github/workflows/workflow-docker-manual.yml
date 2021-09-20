@@ -1,4 +1,4 @@
-name: docker-tag-triggered-base-ondemand
+name: workflow-docker-manual
 
 on:
   workflow_dispatch:

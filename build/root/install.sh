@@ -3,14 +3,22 @@
 # exit script if return code != 0
 set -e
 
+# set arch for base image
+OS_ARCH="x86-64"
+
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
 snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
 # now set pacman to use snapshot for packages for snapshot date
-echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > '/etc/pacman.d/mirrorlist'
-echo 'Server = http://archive.virtapi.org/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
+if [[ "${OS_ARCH}" == "aarch64" ]]; then
+	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > /etc/pacman.d/mirrorlist
+	echo 'Server = http://eu.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
+else
+	echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > '/etc/pacman.d/mirrorlist'
+	echo 'Server = http://archive.virtapi.org/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
+fi
 
 echo "[info] content of arch mirrorlist file"
 cat '/etc/pacman.d/mirrorlist'
@@ -29,7 +37,11 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 gpg --refresh-keys
 
 # initialise key for pacman and populate keys
-pacman-key --init && pacman-key --populate archlinux
+if [[ "${OS_ARCH}" == "aarch64" ]]; then
+	pacman-key --init && pacman-key --populate archlinuxarm
+else
+	pacman-key --init && pacman-key --populate archlinux
+fi
 
 # force use of protocol http and ipv4 only for keyserver (defaults to hkp)
 echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'
@@ -56,6 +68,8 @@ sed -i '\~\[options\]~a # Do not extract the following folders from any packages
 'NoExtract   = usr/share/locale* !usr/share/locale/en* !usr/share/locale/locale.alias\n'\
 'NoExtract   = usr/share/doc*\n'\
 'NoExtract   = usr/share/man*\n'\
+'NoExtract   = usr/lib/firmware*\n'\
+'NoExtract   = usr/lib/modules*\n'\
 'NoExtract   = usr/share/gtk-doc*\n' \
 '/etc/pacman.conf'
 
@@ -140,23 +154,16 @@ usermod -d /home/nobody nobody
 # set shell for user nobody
 chsh -s /bin/bash nobody
 
-# delme once fixed!!
-# force downgrade of coreutils - fixes permission denied issue when building on docker hub
-# https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
-#curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/coreutils.tar.xz" -L "https://github.com/binhex/packages/raw/master/compiled/x86-64/coreutils.tar.xz"
-#pacman -U '/tmp/coreutils.tar.xz' --noconfirm
-# /delme once fixed!!
-
-# force re-install of ncurses 6.x with 5.x backwards compatibility (can be removed once all apps have switched over to ncurses 6.x)
-#curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/ncurses5-compat.tar.xz" -L "https://github.com/binhex/packages/raw/master/compiled/x86-64/ncurses5-compat-libs.tar.xz"
-#pacman -U '/tmp/ncurses5-compat.tar.xz' --noconfirm
-
 # find latest tini release tag from github
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/tini_release_tag" -L "https://github.com/krallin/tini/releases"
 tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
 
 # download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x "/usr/bin/tini"
+if [[ "${OS_ARCH}" == "aarch64" ]]; then
+	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-arm64" && chmod +x "/usr/bin/tini"
+else
+	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x "/usr/bin/tini"
+fi
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

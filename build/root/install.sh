@@ -13,8 +13,8 @@ snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > /etc/pacman.d/mirrorlist
-	echo 'Server = http://eu.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
+	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > '/etc/pacman.d/mirrorlist'
+	echo 'Server = http://eu.mirror.archlinuxarm.org/$arch/$repo' >> '/etc/pacman.d/mirrorlist'
 else
 	echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > '/etc/pacman.d/mirrorlist'
 	echo 'Server = http://archive.virtapi.org/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'

@@ -18,19 +18,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Login to GitHub Container Registry (GHCR)
+      - name: Login to GitHub
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-      - name: Sync GitHub README.md with Docker Hub
-        uses: peter-evans/dockerhub-description@v2
+      - name: Login to GitLab
+        uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }} # NOTE: This MUST be the password NOT the token
-          repository: ${{ github.repository }}
-          short-description: ${{ github.event.repository.description }}
+          registry: registry.gitlab.com
+          username: ${{ secrets.GITLAB_USERNAME }}
+          password: ${{ secrets.GITLAB_TOKEN }}
       - name: Show Runners environment (debug)
         uses: nick-invision/retry@v2.4.0
         with:
@@ -39,16 +38,43 @@ jobs:
           retry_wait_seconds: 120
           command: |
             export
-      - name: Build Docker image and tag
-        # note this step MUST be run as a standard run command do NOT use retry github action
+      - name: Generate temporary tag name
         shell: bash
         run: |
-          docker build \
-            --tag ${{ github.repository }}:latest \
-            --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
-            --tag ghcr.io/${{ github.repository }}:latest \
-            --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
-            .
+          test_tag=$(date +%Y%m%d%H%M%S)
+          echo "[debug] Generated test tag name is '${test_tag}'"
+          echo "::set-output name=test_tag::$test_tag"
+        id: generate_temporary_tag_name
+      - name: Generate app name
+        shell: bash
+        run: |
+          app_name=$(echo "${GITHUB_REPOSITORY}" | grep -P -o -m 1 '(?<=/arch-).*')
+          echo "[debug] Generated app name is '${app_name}'"
+          echo "::set-output name=app_name::$app_name"
+        id: generate_app_name
+      - name: Build Docker image and tag
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            docker build \
+              --tag ${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
+              --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
+              --tag ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
+              --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
+              --tag registry.gitlab.com/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
+              --tag registry.gitlab.com/${{ github.repository }}:${{ github.event.inputs.tags }} \
+              .
+      - name: Run Tests
+        shell: bash
+        run: |
+          git_clone_scripts_dest="/tmp/scripts"
+          git_clone_scripts_repo="https://github.com/binhex/scripts.git"
+
+          git clone "${git_clone_scripts_repo}" "${git_clone_scripts_dest}"
+          "${git_clone_scripts_dest}/shell/arch/docker/testrunner.sh" --app-name ${{ steps.generate_app_name.outputs.app_name }} --image-name "ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}"
       - name: Push Docker image to Docker Hub
         uses: nick-invision/retry@v2.4.0
         with:
@@ -56,7 +82,6 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            docker push ${{ github.repository }}:latest
             docker push ${{ github.repository }}:${{ github.event.inputs.tags }}
       - name: Push Docker image to GitHub Container Registry (GHCR)
         uses: nick-invision/retry@v2.4.0
@@ -65,22 +90,12 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            docker push ghcr.io/${{ github.repository }}:latest
             docker push ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }}
-      - name: Create releases for all intermediate images
+      - name: Push Docker image to GitLab Container Registry (GCR)
         uses: nick-invision/retry@v2.4.0
         with:
           timeout_minutes: 30
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            # construct list of intermediate repos to trigger builds for
-            int_repos="arch-int-vpn,arch-int-gui"
-
-            # split comma separated string into array
-            IFS=',' read -ra int_repos_array <<< "${int_repos}"
-
-            # process int repos and create release (triggers action to build)
-            for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${{ github.event.inputs.tags }}"'","target_commitish": "master","name": "API/URL triggered release","body": "'"${{ github.event.inputs.tags }}"'","draft": false,"prerelease": false}'
-            done
+            docker push registry.gitlab.com/${{ github.repository }}:${{ github.event.inputs.tags }}

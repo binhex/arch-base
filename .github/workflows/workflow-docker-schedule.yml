@@ -74,12 +74,8 @@ jobs:
           echo "::set-output name=app_name::$app_name"
         id: generate_app_name
       - name: Build Docker image and tag
-        uses: nick-invision/retry@v2.4.0
-        with:
-          timeout_minutes: 60
-          max_attempts: 3
-          retry_wait_seconds: 120
-          command: |
+        shell: bash
+        run: |
             docker build \
               --tag ${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
               --tag ${{ github.repository }}:latest \

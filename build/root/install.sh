@@ -47,7 +47,7 @@ fi
 echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'
 echo "no-permission-warning" >> '/etc/pacman.d/gnupg/gpg.conf'
 echo "lock-never" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "keyserver hkp://ipv4.pool.sks-keyservers.net" >> '/etc/pacman.d/gnupg/gpg.conf'
+echo "keyserver https://keyserver.ubuntu.com" >> '/etc/pacman.d/gnupg/gpg.conf'
 echo "keyserver-options timeout=10" >> '/etc/pacman.d/gnupg/gpg.conf'
 
 # perform pacman refresh with retries (required as keyservers are unreliable)

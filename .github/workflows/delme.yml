@@ -1,4 +1,4 @@
-name: workflow-docker-manual
+name: delme
 
 on:
   workflow_dispatch:

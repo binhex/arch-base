@@ -1,0 +1,75 @@
+name: workflow-docker-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Enter tag name for test/dev image'
+        default: 'test'
+
+jobs:
+  gcr-dockerhub-build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to GitHub
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Login to GitLab
+        uses: docker/login-action@v1
+        with:
+          registry: registry.gitlab.com
+          username: ${{ secrets.GITLAB_USERNAME }}
+          password: ${{ secrets.GITLAB_TOKEN }}
+      - name: Show Runners environment (debug)
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            export
+      - name: Generate temporary tag name
+        shell: bash
+        run: |
+          test_tag=$(date +%Y%m%d%H%M%S)
+          echo "[debug] Generated test tag name is '${test_tag}'"
+          echo "::set-output name=test_tag::$test_tag"
+        id: generate_temporary_tag_name
+      - name: Generate app name
+        shell: bash
+        run: |
+          app_name=$(echo "${GITHUB_REPOSITORY}" | grep -P -o -m 1 '(?<=/arch-).*')
+          echo "[debug] Generated app name is '${app_name}'"
+          echo "::set-output name=app_name::$app_name"
+        id: generate_app_name
+      - name: Generate int tag name
+        shell: bash
+        run: |
+          int_tag=$(date +%Y%m%d01)
+          echo "[debug] Generated int tag name is '${int_tag}'"
+          echo "::set-output name=int_tag::$int_tag"
+        id: generate_int_tag_name
+      - name: Trigger build of int images
+        uses: nick-invision/retry@v2.4.0
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            # construct array of intermediate repos to trigger builds for
+            declare -a int_repos_array=("arch-int-vpn" "arch-int-gui")
+
+            # process int repos and create release (triggers action to build)
+            for int_repo in "${int_repos_array[@]}"; do
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","target_commitish": "master","name": "API/URL triggered release","body": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","draft": false,"prerelease": false}'
+            done

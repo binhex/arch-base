@@ -65,6 +65,13 @@ jobs:
           echo "[debug] Generated test tag name is '${test_tag}'"
           echo "::set-output name=test_tag::$test_tag"
         id: generate_temporary_tag_name
+      - name: Generate int tag name
+        shell: bash
+        run: |
+          int_tag=$(date +%Y%m%d01)
+          echo "[debug] Generated int tag name is '${int_tag}'"
+          echo "::set-output name=int_tag::$int_tag"
+        id: generate_int_tag_name
       - name: Generate app name
         shell: bash
         run: |
@@ -142,5 +149,5 @@ jobs:
 
             # process int repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'"${TAG_NAME}"'","target_commitish": "master","name": "API/URL triggered release","body": "'"${TAG_NAME}"'","draft": false,"prerelease": false}'
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","target_commitish": "master","name": "API/URL triggered release","body": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","draft": false,"prerelease": false}'
             done

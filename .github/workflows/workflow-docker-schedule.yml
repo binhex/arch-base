@@ -144,10 +144,10 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            # construct array of intermediate repos to trigger builds for
-            declare -a int_repos_array=("arch-int-vpn" "arch-int-gui")
+            # construct array of repos to trigger builds for
+            declare -a int_repos_array=("arch-int-vpn" "arch-int-gui" "arch-devel")
 
-            # process int repos and create release (triggers action to build)
+            # process repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
               curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","target_commitish": "master","name": "API/URL triggered release","body": "'${{ steps.generate_int_tag_name.outputs.int_tag }}'","draft": false,"prerelease": false}'
             done

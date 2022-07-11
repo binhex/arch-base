@@ -154,15 +154,15 @@ usermod -d /home/nobody nobody
 # set shell for user nobody
 chsh -s /bin/bash nobody
 
-# find latest tini release tag from github
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/tini_release_tag" -L "https://github.com/krallin/tini/releases"
-tini_release_tag=$(cat /tmp/tini_release_tag | grep -P -o -m 1 '(?<=/krallin/tini/releases/tag/)[^"]+')
+# find latest dumb-init release tag from github
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/tmp/dumbinit_release_tag" -L "https://github.com/Yelp/dumb-init/releases"
+dumbinit_release_tag=$(grep -P -o -m 1 '(?<=/Yelp/dumb-init/releases/tag/)[^"]+' < /tmp/dumbinit_release_tag)
 
-# download tini, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+# download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
 if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-arm64" && chmod +x "/usr/bin/tini"
+	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag}_aarch64" && chmod +x "/usr/bin/dumb-init"
 else
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/tini" -L "https://github.com/krallin/tini/releases/download/${tini_release_tag}/tini-amd64" && chmod +x "/usr/bin/tini"
+	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag}_x86_64" && chmod +x "/usr/bin/dumb-init"
 fi
 
 # identify if base-devel package installed

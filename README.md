@@ -12,7 +12,7 @@ Arch Linux base image built from "scratch". This image is set to a snapshot by u
 
 **Notes**
 
-This image includes Tini (https://github.com/krallin/tini) to ensure a clean shutdown and to correctly reap processes, Supervisor (http://supervisord.org/) is also installed to help monitor and run child processes.
+This image includes dumb-init (https://github.com/Yelp/dumb-init) to ensure a clean shutdown and to correctly reap processes, Supervisor (http://supervisord.org/) is also installed to help monitor and run child processes.
 
 If you appreciate my work, then please consider buying me a beer  :D
 

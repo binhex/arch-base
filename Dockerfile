@@ -25,7 +25,7 @@ RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN ["/bootstrap/sh", "-c", "rel_date=$(/bootstrap/date +%Y.%m.01) && /bootstrap/wget --timeout=60 -O /bootstrap/archlinux.tar.gz http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-${rel_date}-x86_64.tar.gz && /bootstrap/tar --exclude=root.x86_64/etc/resolv.conf --exclude=root.x86_64/etc/hosts -xvf /bootstrap/archlinux.tar.gz --strip-components=1 -C / && /bin/bash -c 'chmod +x /root/*.sh && /bin/bash /root/install.sh'"]
+RUN ["/bootstrap/sh", "-c", "/bootstrap/wget --timeout=60 -O /bootstrap/archlinux.tar.gz http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.gz && /bootstrap/tar --exclude=root.x86_64/etc/resolv.conf --exclude=root.x86_64/etc/hosts -xvf /bootstrap/archlinux.tar.gz --strip-components=1 -C / && /bin/bash -c 'chmod +x /root/*.sh && /bin/bash /root/install.sh'"]
 
 # env
 #####

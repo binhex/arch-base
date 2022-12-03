@@ -43,21 +43,8 @@ else
 	pacman-key --init && pacman-key --populate archlinux
 fi
 
-# force use of protocol http and ipv4 only for keyserver (defaults to hkp)
-echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'
-echo "no-permission-warning" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "lock-never" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "keyserver https://keyserver.ubuntu.com" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "keyserver-options timeout=10" >> '/etc/pacman.d/gnupg/gpg.conf'
-
-# perform pacman refresh with retries (required as keyservers are unreliable)
-count=0
-echo "[info] refreshing keys for pacman..."
-until pacman-key --refresh-keys || (( count++ >= 2 ))
-do
-	echo "[warn] failed to refresh keys for pacman, retrying in 30 seconds..."
-	sleep 30s
-done
+echo "[info] set pacman to ignore signatures - required due to rolling release nature of archlinux"
+sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
 pacman -Sy sed --noconfirm

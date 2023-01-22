@@ -59,7 +59,7 @@ jobs:
           command: |
             tag=$(date +%Y%m%d01)
             echo "[debug] Generated tag name is '${tag}'"
-            echo "::set-output name=tag::$tag"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
         id: identify_github_release_tag_name
       - name: Generate temporary tag name
         shell: bash

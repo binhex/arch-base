@@ -99,19 +99,13 @@ echo "[info] Removing unneeded packages that might be part of the tarball..."
 echo "${pacman_remove_unneeded_packages} || true"
 eval "${pacman_remove_unneeded_packages} || true"
 
-# grep 3.10 is broken, downgrading to non buggy last version (3.9 had a -P flag related bug)
-curl -o '/tmp/grep.zst' 'https://archive.archlinux.org/packages/g/grep/grep-3.8-3-x86_64.pkg.tar.zst'
-pacman -U '/tmp/grep.zst' --noconfirm
-
 echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
-# add grep to pacman ignore list to prevent issue with -P flag and lookahead
-#
 # add filesystem to pacman ignore list to prevent buildx issues with
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
 #
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = filesystem grep~g' '/etc/pacman.conf'
+sed -i -e 's~#IgnorePkg.*~IgnorePkg = filesystem~g' '/etc/pacman.conf'
 
 echo "[info] Displaying contents of pacman config file, showing ignored packages..."
 cat '/etc/pacman.conf'
@@ -120,8 +114,7 @@ echo "[info] Updating packages currently installed..."
 pacman -Syu --noconfirm
 
 echo "[info] Install base group and additional packages..."
-# re-add grep to list once grep issue fixed (see above)
-pacman -S base awk sed gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.1 rsync --noconfirm
+pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.1 rsync --noconfirm
 
 echo "[info] set locale..."
 echo en_GB.UTF-8 UTF-8 > '/etc/locale.gen'

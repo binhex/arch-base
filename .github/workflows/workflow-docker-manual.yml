@@ -58,10 +58,14 @@ jobs:
           echo "[debug] Generated app name is '${app_name}'"
           echo "app_name=$app_name" >> $GITHUB_OUTPUT
         id: generate_app_name
+      - name: Install platform emulators
+        shell: bash
+        run: |
+          docker run --privileged --rm tonistiigi/binfmt --install all
       - name: Build Docker image and tag
         shell: bash
         run: |
-            docker build \
+            docker buildx build --platform linux/amd64,linux/arm64 \
               --tag ${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
               --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
               --tag quay.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \

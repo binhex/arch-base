@@ -77,7 +77,7 @@ jobs:
               --tag ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }} \
               --tag registry.gitlab.com/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
               --tag registry.gitlab.com/${{ github.repository }}:${{ github.event.inputs.tags }} \
-              -o type=image,push=true \
+              -o type=image,push=false \
               .
       - name: Run Tests
         shell: bash

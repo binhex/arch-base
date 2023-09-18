@@ -8,17 +8,13 @@ ARG TARGETARCH
 ##################
 
 # add supervisor conf file
-ADD build/${TARGETARCH}/*.conf /etc/supervisor.conf
+ADD build/common/*.conf /etc/supervisor.conf
 
 # add install bash script
-ADD build/${TARGETARCH}/root/*.sh /root/
+ADD build/common/root/*.sh /bootstrap/
 
-# add statically linked busybox arm64
+# add statically linked busybox for target arch
 ADD build/${TARGETARCH}/utils/busybox/busybox /bootstrap/busybox
-
-# add build bootstrap file
-ADD build/${TARGETARCH}/build-bootstrap.sh /bootstrap/build-bootstrap.sh
-
 
 # unpack tarball
 ################
@@ -31,7 +27,7 @@ RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN ["/bootstrap/sh", "-c", "/bootstrap/build-bootstrap.sh"]
+RUN ["/bootstrap/sh", "-c", "/bootstrap/bootstrap.sh ${TARGETARCH}"]
 
 # env
 #####

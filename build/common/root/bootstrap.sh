@@ -15,4 +15,4 @@ else
 fi
 
 # download tarball, note busybox wget does not support SSL
-/bootstrap/sh -c "/bootstrap/wget --timeout=60 -O /bootstrap/archlinux.tar.gz ${url} && /bootstrap/tar --exclude=${exclude}/etc/resolv.conf --exclude=${exclude}/etc/hosts -xvf /bootstrap/archlinux.tar.gz ${strip} -C / && /bin/bash -c 'chmod +x /root/*.sh && /bin/bash /root/install.sh ${TARGETARCH}'"
+/bootstrap/sh -c "/bootstrap/wget --timeout=60 -O /bootstrap/archlinux.tar.gz ${url} && /bootstrap/tar --exclude=${exclude}/etc/resolv.conf --exclude=${exclude}/etc/hosts -xvf /bootstrap/archlinux.tar.gz ${strip} -C / && /bin/bash -c 'chmod +x /bootstrap/*.sh && /bin/bash /bootstrap/install.sh ${TARGETARCH}'"

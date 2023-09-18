@@ -11,7 +11,7 @@ ARG TARGETARCH
 ADD build/common/*.conf /etc/supervisor.conf
 
 # add install bash script
-ADD build/common/root/*.sh /root/
+ADD build/common/root/*.sh /bootstrap/
 
 # add statically linked busybox for target arch
 ADD build/${TARGETARCH}/utils/busybox/busybox /bootstrap/busybox

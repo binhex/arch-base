@@ -4,7 +4,7 @@
 set -e
 
 # set arch for base image
-OS_ARCH="x86-64"
+OS_ARCH="aarch64"
 
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
@@ -43,8 +43,21 @@ else
 	pacman-key --init && pacman-key --populate archlinux
 fi
 
-echo "[info] set pacman to ignore signatures - required due to rolling release nature of archlinux"
-sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
+# force use of protocol http and ipv4 only for keyserver (defaults to hkp)
+echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'
+echo "no-permission-warning" >> '/etc/pacman.d/gnupg/gpg.conf'
+echo "lock-never" >> '/etc/pacman.d/gnupg/gpg.conf'
+echo "keyserver https://keyserver.ubuntu.com" >> '/etc/pacman.d/gnupg/gpg.conf'
+echo "keyserver-options timeout=10" >> '/etc/pacman.d/gnupg/gpg.conf'
+
+# perform pacman refresh with retries (required as keyservers are unreliable)
+count=0
+echo "[info] refreshing keys for pacman..."
+until pacman-key --refresh-keys || (( count++ >= 3 ))
+do
+	echo "[warn] failed to refresh keys for pacman, retrying in 30 seconds..."
+	sleep 30s
+done
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
 pacman -Sy sed --noconfirm
@@ -101,6 +114,9 @@ eval "${pacman_remove_unneeded_packages} || true"
 
 echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
+# add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub -
+# https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
+#
 # add filesystem to pacman ignore list to prevent buildx issues with
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038

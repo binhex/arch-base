@@ -8,7 +8,7 @@ ARG TARGETARCH
 ##################
 
 # add supervisor conf file
-ADD build/common/*.conf /etc/supervisor.conf
+ADD build/common/root/*.conf /etc/supervisor.conf
 
 # add install bash script
 ADD build/common/root/*.sh /bootstrap/

@@ -16,9 +16,6 @@ ADD build/common/root/*.sh /root/
 # add statically linked busybox for target arch
 ADD build/${TARGETARCH}/utils/busybox/busybox /bootstrap/busybox
 
-# add build bootstrap file
-ADD build/common/build-bootstrap.sh /bootstrap/build-bootstrap.sh
-
 # unpack tarball
 ################
 

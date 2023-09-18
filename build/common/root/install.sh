@@ -3,8 +3,8 @@
 # exit script if return code != 0
 set -e
 
-# set arch for base image
-OS_ARCH="aarch64"
+# get target arch from first parameter (defined in Dockerfile as arg)
+TARGETARCH="${1}"
 
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
@@ -12,7 +12,7 @@ OS_ARCH="aarch64"
 snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
 # now set pacman to use snapshot for packages for snapshot date
-if [[ "${OS_ARCH}" == "aarch64" ]]; then
+if [[ "${TARGETARCH}" == "arm64" ]]; then
 	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > '/etc/pacman.d/mirrorlist'
 	echo 'Server = http://eu.mirror.archlinuxarm.org/$arch/$repo' >> '/etc/pacman.d/mirrorlist'
 else
@@ -36,28 +36,17 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # refresh gpg keys
 gpg --refresh-keys
 
-# initialise key for pacman and populate keys
-if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	pacman-key --init && pacman-key --populate archlinuxarm
+if [[ "${TARGETARCH}" == "arm64" ]]; then
+	pacman_arch="archlinuxarm"
 else
-	pacman-key --init && pacman-key --populate archlinux
+	pacman_arch="archlinux"
 fi
 
-# force use of protocol http and ipv4 only for keyserver (defaults to hkp)
-echo "no-greeting" > '/etc/pacman.d/gnupg/gpg.conf'
-echo "no-permission-warning" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "lock-never" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "keyserver https://keyserver.ubuntu.com" >> '/etc/pacman.d/gnupg/gpg.conf'
-echo "keyserver-options timeout=10" >> '/etc/pacman.d/gnupg/gpg.conf'
+# initialise key for pacman and populate keys
+pacman-key --init && pacman-key --populate "${pacman_arch}"
 
-# perform pacman refresh with retries (required as keyservers are unreliable)
-count=0
-echo "[info] refreshing keys for pacman..."
-until pacman-key --refresh-keys || (( count++ >= 3 ))
-do
-	echo "[warn] failed to refresh keys for pacman, retrying in 30 seconds..."
-	sleep 30s
-done
+echo "[info] set pacman to ignore signatures - required due to rolling release nature of archlinux"
+sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
 pacman -Sy sed --noconfirm
@@ -114,9 +103,6 @@ eval "${pacman_remove_unneeded_packages} || true"
 
 echo "[info] Adding required packages to pacman ignore package list to prevent upgrades..."
 
-# add coreutils to pacman ignore list to prevent permission denied issue on Docker Hub -
-# https://gitlab.archlinux.org/archlinux/archlinux-docker/-/issues/32
-#
 # add filesystem to pacman ignore list to prevent buildx issues with
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
@@ -161,12 +147,14 @@ dumbinit_release_tag=$(grep -P -o -m 1 '(?<=/Yelp/dumb-init/releases/tag/)[^"]+'
 # remove first character 'v' from string, used for url to download binary
 dumbinit_release_tag_strip="${dumbinit_release_tag#?}"
 
-# download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
-if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_aarch64" && chmod +x "/usr/bin/dumb-init"
+if [[ "${TARGETARCH}" == "arm64" ]]; then
+	dumbinit_arch="aarch64"
 else
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_x86_64" && chmod +x "/usr/bin/dumb-init"
+	dumbinit_arch="x86_64"
 fi
+
+# download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_${dumbinit_arch}" && chmod +x "/usr/bin/dumb-init"
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then
@@ -191,6 +179,7 @@ rm -rf /var/cache/* \
 
 # additional cleanup for base only
 rm -rf /root/* \
+/boot/* \
 /var/cache/pacman/pkg/* \
 /usr/lib/firmware \
 /usr/lib/modules \

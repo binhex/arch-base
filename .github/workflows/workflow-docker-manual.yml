@@ -67,8 +67,7 @@ jobs:
         run: |
             docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
             docker buildx inspect --bootstrap
-            
-            docker buildx build --platform linux/amd64,linux/arm64 \
+            docker buildx build -o type=image,push=true --platform linux/amd64,linux/arm64 \
               --tag ${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \
               --tag ${{ github.repository }}:${{ github.event.inputs.tags }} \
               --tag quay.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }} \

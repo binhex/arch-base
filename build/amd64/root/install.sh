@@ -36,12 +36,14 @@ rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
 # refresh gpg keys
 gpg --refresh-keys
 
-# initialise key for pacman and populate keys
 if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	pacman-key --init && pacman-key --populate archlinuxarm
+	pacman_arch="archlinuxarm"
 else
-	pacman-key --init && pacman-key --populate archlinux
+	pacman_arch="archlinux"
 fi
+
+# initialise key for pacman and populate keys
+pacman-key --init && pacman-key --populate "${pacman_arch}"
 
 echo "[info] set pacman to ignore signatures - required due to rolling release nature of archlinux"
 sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
@@ -145,12 +147,14 @@ dumbinit_release_tag=$(grep -P -o -m 1 '(?<=/Yelp/dumb-init/releases/tag/)[^"]+'
 # remove first character 'v' from string, used for url to download binary
 dumbinit_release_tag_strip="${dumbinit_release_tag#?}"
 
-# download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
 if [[ "${OS_ARCH}" == "aarch64" ]]; then
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_aarch64" && chmod +x "/usr/bin/dumb-init"
+	dumbinit_arch="aarch64"
 else
-	curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_x86_64" && chmod +x "/usr/bin/dumb-init"
+	dumbinit_arch="x86_64"
 fi
+
+# download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_${dumbinit_arch}" && chmod +x "/usr/bin/dumb-init"
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

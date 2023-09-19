@@ -14,7 +14,6 @@ snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "arm64" ]]; then
 	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > '/etc/pacman.d/mirrorlist'
-	echo 'Server = http://eu.mirror.archlinuxarm.org/$arch/$repo' >> '/etc/pacman.d/mirrorlist'
 else
 	echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > '/etc/pacman.d/mirrorlist'
 	echo 'Server = http://archive.virtapi.org/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
@@ -25,13 +24,6 @@ cat '/etc/pacman.d/mirrorlist'
 
 # reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
 rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true
-
-# dns resolution reconfigure is required due to the tarball extraction
-# overwriting the /etc/resolv.conf, thus we then need to fix this up
-# before we can continue to build the image.
-#echo "[info] Setting DNS resolvers to Cloudflare..."
-#echo "nameserver 1.1.1.1" > '/etc/resolv.conf' || true
-#echo "nameserver 1.0.0.1" >> '/etc/resolv.conf' || true
 
 # refresh gpg keys
 gpg --refresh-keys

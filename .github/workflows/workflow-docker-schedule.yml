@@ -4,7 +4,7 @@ on:
   schedule:
     # run at midnight on day 7 of every other month
     #- cron: "0 0 7 */2 *"
-    - cron: "48 11 * * *"
+    - cron: "17 12 * * *"
   push:
     tags:
       - '*'
@@ -119,5 +119,5 @@ jobs:
 
             # process repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'","target_commitish": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'","name": "API/URL triggered release","body": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'","draft": false,"prerelease": false}'
+              curl -v -i -X POST -H "Content-Type:application/json" -H "Authorization: token ${{ secrets.TDB_PAT }}" "https://api.github.com/repos/binhex/${int_repo}/releases" -d '{"tag_name": "${{ steps.identify_github_release_tag_name.outputs.tag }}","target_commitish": "${{ steps.identify_github_release_tag_name.outputs.tag }}","name": "API/URL triggered release","body": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'","draft": false,"prerelease": false}'
             done

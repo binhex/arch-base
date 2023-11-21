@@ -4,7 +4,7 @@ on:
   schedule:
     # run at midnight on day 7 of every other month
     #- cron: "0 0 7 */2 *"
-    - cron: "30 11 * * *"
+    - cron: "36 11 * * *"
   push:
     tags:
       - '*'

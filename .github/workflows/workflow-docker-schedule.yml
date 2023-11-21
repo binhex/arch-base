@@ -58,7 +58,7 @@ jobs:
           command: |
             export
       - name: Identify GitHub Release tag name
-        # tag name is generated from date with '01' appended, as there is no upstream trigger
+        # tag name is generated from date with '01' appended, as there is no upstream trigger (tdb)
         # for this build as it's simply on a schedule (unlike the other builds).
         uses: nick-fields/retry@v2
         with:

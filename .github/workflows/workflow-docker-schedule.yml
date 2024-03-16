@@ -1,19 +1,12 @@
 name: workflow-docker-schedule
 
-# on:
-#   schedule:
-#     # run at midnight on day 7 of every other month
-#     - cron: "0 0 7 */2 *"
-#   push:
-#     tags:
-#       - '*'
-
 on:
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter tag name for test/dev image'
-        default: 'test'
+  schedule:
+    # run at midnight on day 7 of every other month
+    - cron: "0 0 7 */2 *"
+  push:
+    tags:
+      - '*'
 
 jobs:
   gcr-dockerhub-build-publish:

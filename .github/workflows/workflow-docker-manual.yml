@@ -55,6 +55,19 @@ jobs:
           retry_wait_seconds: 120
           command: |
             export
+      - name: Identify GitHub Release tag name
+        # tag name is generated from date with '01' appended, as there is no upstream trigger (tdb)
+        # for this build as it's simply on a schedule (unlike the other builds).
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            tag=$(date +%Y%m%d01)
+            echo "[debug] Generated tag name is '${tag}'"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+        id: identify_github_release_tag_name
       - name: Generate temporary tag name
         shell: bash
         run: |
@@ -75,8 +88,6 @@ jobs:
           context: .
           load: true
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
-          build-args: |
-            RELEASETAG=${{ github.event.inputs.tags }}
       - name: Run tests using previously built image
         shell: bash
         run: |
@@ -91,6 +102,32 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.repository }}:${{ github.event.inputs.tags }}, quay.io/${{ github.repository }}:${{ github.event.inputs.tags }}, ghcr.io/${{ github.repository }}:${{ github.event.inputs.tags }}, registry.gitlab.com/${{ github.repository }}:${{ github.event.inputs.tags }}
+          tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
           build-args: |
-            RELEASETAG=${{ github.event.inputs.tags }}
+            RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+      - name: Trigger build of int images
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 120
+          command: |
+            # construct array of repos to trigger builds for
+            declare -a int_repos_array=("arch-int-vpn" "arch-int-gui" "arch-devel")
+
+            # process repos and create release (triggers action to build)
+            for int_repo in "${int_repos_array[@]}"; do
+              curl -v -i -X POST \
+                -H "Content-Type:application/json" \
+                -H \
+                  "Authorization: token ${{ secrets.TDB_PAT }}" \
+                  "https://api.github.com/repos/binhex/${int_repo}/releases" \
+                -d '{\
+                  "tag_name": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'",\
+                  "target_commitish": "master",\
+                  "name": "API/URL triggered release",\
+                  "body": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'",\
+                  "draft": false,\
+                  "prerelease": false\
+                }'
+            done

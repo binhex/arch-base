@@ -9,7 +9,7 @@ TARGETARCH="${1}"
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
-snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
+snapshot_date=$(date -d "1 days ago" +%Y/%m/%d)
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "arm64" ]]; then

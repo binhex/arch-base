@@ -112,6 +112,7 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
+            set -x
             # login to github
             echo "${{ secrets.TDB_PAT }}" | gh auth login --with-token
 
@@ -122,5 +123,5 @@ jobs:
             for int_repo in "${int_repos_array[@]}"; do
 
               # create release using gh cli
-              gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "github.com/${{ int_repo }}" --title "API/URL triggered release" --target "master" --draft false --prerelease false
+              gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "github.com/${int_repo}" --title "API/URL triggered release" --target "master" --draft false --prerelease false
             done

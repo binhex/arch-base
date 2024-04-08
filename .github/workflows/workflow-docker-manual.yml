@@ -123,5 +123,6 @@ jobs:
             for int_repo in "${int_repos_array[@]}"; do
 
               # create release using gh cli
-              gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --notes "API/URL triggered release" --target "master"
+              # note --target is not specified as it maybe 'main' or 'master'
+              gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --notes "API/URL triggered release"
             done

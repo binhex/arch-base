@@ -113,22 +113,16 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
+            # login to github
+            echo "${{ secrets.TDB_PAT }}" | gh auth login --with-token
+
             # construct array of repos to trigger builds for
             declare -a int_repos_array=("arch-int-vpn" "arch-int-gui" "arch-devel")
 
             # process repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
-              curl -v -i -X POST \
-                -H "Content-Type:application/json" \
-                -H \
-                  "Authorization: token ${{ secrets.TDB_PAT }}" \
-                  "https://api.github.com/repos/binhex/${int_repo}/releases" \
-                -d '{\
-                  "tag_name": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'",\
-                  "target_commitish": "master",\
-                  "name": "API/URL triggered release",\
-                  "body": "'${{ steps.identify_github_release_tag_name.outputs.tag }}'",\
-                  "draft": false,\
-                  "prerelease": false\
-                }'
+
+              # create release using gh cli
+              # note --target is not specified as it maybe 'main' or 'master'
+              gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --notes "API/URL triggered release"
             done

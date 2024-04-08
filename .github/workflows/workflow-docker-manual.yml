@@ -82,29 +82,29 @@ jobs:
           echo "[debug] Generated app name is '${app_name}'"
           echo "app_name=$app_name" >> $GITHUB_OUTPUT
         id: generate_app_name
-      # - name: Build amd64 image and export to Docker for testing
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     load: true
-      #     tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
-      # - name: Run tests using previously built image
-      #   shell: bash
-      #   run: |
-      #     git_clone_scripts_dest="/tmp/scripts"
-      #     git_clone_scripts_repo="https://github.com/binhex/scripts.git"
-      #     git clone "${git_clone_scripts_repo}" "${git_clone_scripts_dest}"
-      #     "${git_clone_scripts_dest}/shell/arch/docker/testrunner.sh" --app-name ${{ steps.generate_app_name.outputs.app_name }} --image-name "ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}"
-      # # note this will re-use the internal cached amd64 image from the previous build
-      # - name: Build multi-arch Docker image, tag and push to registries
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     platforms: linux/amd64,linux/arm64
-      #     push: true
-      #     tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
-      #     build-args: |
-      #       RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+      - name: Build amd64 image and export to Docker for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
+      - name: Run tests using previously built image
+        shell: bash
+        run: |
+          git_clone_scripts_dest="/tmp/scripts"
+          git_clone_scripts_repo="https://github.com/binhex/scripts.git"
+          git clone "${git_clone_scripts_repo}" "${git_clone_scripts_dest}"
+          "${git_clone_scripts_dest}/shell/arch/docker/testrunner.sh" --app-name ${{ steps.generate_app_name.outputs.app_name }} --image-name "ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}"
+      # note this will re-use the internal cached amd64 image from the previous build
+      - name: Build multi-arch Docker image, tag and push to registries
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
+          build-args: |
+            RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
       - name: Trigger build of int images
         uses: nick-fields/retry@v2
         with:
@@ -112,7 +112,6 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 120
           command: |
-            set -x
             # login to github
             echo "${{ secrets.TDB_PAT }}" | gh auth login --with-token
 

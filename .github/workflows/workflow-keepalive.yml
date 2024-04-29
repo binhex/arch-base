@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # note this requires settings/actions/general/workflow
       # permissions/ set to 'read and write permisisons'.
       # will create dummy commit if no commit for 50 days

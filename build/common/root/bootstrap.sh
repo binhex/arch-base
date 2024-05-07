@@ -8,7 +8,7 @@ if [ "${TARGETARCH}" = "amd64" ]; then
 	url="http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"
 	exclude="root.x86_64"
 	strip="--strip-components=1"
-	compession="zst"
+	compression="zst"
 	decompress="/bootstrap/zstd -d /bootstrap/archlinux.tar.${compression}"
 else
 	url="http://mirrors.dotsrc.org/archlinuxarm/os/ArchLinuxARM-aarch64-latest.tar.gz"

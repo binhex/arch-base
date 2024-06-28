@@ -107,7 +107,7 @@ echo "[info] Updating packages currently installed..."
 pacman -Syu --noconfirm
 
 echo "[info] Install base group and additional packages..."
-pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.1 rsync --noconfirm
+pacman -S base awk sed grep gzip supervisor nano vi ldns moreutils net-tools dos2unix unzip unrar htop jq openssl-1.1 rsync openbsd-netcat --noconfirm
 
 echo "[info] set locale..."
 echo en_GB.UTF-8 UTF-8 > '/etc/locale.gen'

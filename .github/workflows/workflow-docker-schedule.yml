@@ -78,7 +78,7 @@ jobs:
       - name: Build amd64 image and export to Docker for testing
         uses: Wandalen/wretry.action@v3
         with:
-          action: docker/build-push-action@v5
+          action: docker/build-push-action@v6
           with: |
             context: .
             load: true
@@ -94,7 +94,7 @@ jobs:
       - name: Build amd64 image and export to Docker for testing
         uses: Wandalen/wretry.action@v3
         with:
-          action: docker/build-push-action@v5
+          action: docker/build-push-action@v6
           with: |
             context: .
             push: true

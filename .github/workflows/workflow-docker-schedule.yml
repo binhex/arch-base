@@ -83,6 +83,8 @@ jobs:
             context: .
             load: true
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
+          attempt_limit: 3
+          attempt_delay: 600000
       - name: Run tests using previously built image
         shell: bash
         run: |
@@ -91,7 +93,7 @@ jobs:
           git clone "${git_clone_scripts_repo}" "${git_clone_scripts_dest}"
           "${git_clone_scripts_dest}/shell/arch/docker/testrunner.sh" --app-name ${{ steps.generate_app_name.outputs.app_name }} --image-name "ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}"
       # note this will re-use the internal cached amd64 image from the previous build
-      - name: Build amd64 image and export to Docker for testing
+      - name: Build multi-arch Docker image, tag and push to registries
         uses: Wandalen/wretry.action@v3
         with:
           action: docker/build-push-action@v6
@@ -107,8 +109,6 @@ jobs:
       - name: Trigger build of int images
         uses: Wandalen/wretry.action@v3
         with:
-          attempt_limit: 3
-          attempt_delay: 600000
           command: |
             # login to github
             echo "${{ secrets.TDB_PAT }}" | gh auth login --with-token

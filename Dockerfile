@@ -1,6 +1,6 @@
 FROM scratch
-LABEL org.opencontainers.image.authors = "binhex"
-LABEL org.opencontainers.image.source = "https://github.com/binhex/arch-base"
+LABEL org.opencontainers.image.authors="binhex"
+LABEL org.opencontainers.image.source="https://github.com/binhex/arch-base"
 
 # arch from buildx --platform, e.g. amd64
 ARG TARGETARCH
@@ -34,13 +34,13 @@ RUN ["/bootstrap/sh", "-c", "/bootstrap/bootstrap.sh ${TARGETARCH}"]
 #####
 
 # set environment variables for user nobody
-ENV HOME /home/nobody
+ENV HOME=/home/nobody
 
 # set environment variable for terminal
-ENV TERM xterm
+ENV TERM=xterm
 
 # set environment variables for language
-ENV LANG en_GB.UTF-8
+ENV LANG=en_GB.UTF-8
 
 # run
 #####

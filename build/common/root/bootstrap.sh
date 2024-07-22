@@ -1,7 +1,10 @@
 #!/bootstrap/sh
 
+# get release tag name (defined in Dockerfile as arg)
+RELEASETAG="${1}"
+
 # get target arch from first parameter (defined in Dockerfile as arg)
-TARGETARCH="${1}"
+TARGETARCH="${2}"
 
 # create vars for arch
 if [ "${TARGETARCH}" = "amd64" ]; then

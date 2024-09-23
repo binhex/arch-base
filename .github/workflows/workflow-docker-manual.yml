@@ -81,6 +81,7 @@ jobs:
           with: |
             context: .
             load: true
+            platforms: linux/amd64
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
           attempt_limit: 3
           attempt_delay: 600000

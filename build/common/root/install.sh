@@ -9,6 +9,8 @@ RELEASETAG="${1}"
 # get target arch from first parameter (defined in Dockerfile as arg)
 TARGETARCH="${2}"
 
+echo "target arch is ${TARGETARCH}"
+exit 1
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
@@ -27,12 +29,12 @@ echo "BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-release'
 if [[ "${TARGETARCH}" == "arm64" ]]; then
 	server_list='tardis.tiny-vps.com/aarm alaa.ad24.cz'
 	for server in ${server_list}; do
-		echo "Server = http://${server}/repos/${snapshot_date}/aarch64/\$repo" >> "${mirrorlist_filepath}"
+		echo "Server = http://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	done
 else
 	server_list='europe.archive.pkgbuild.com america.archive.pkgbuild.com asia.archive.pkgbuild.com'
 	for server in ${server_list}; do
-		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/x86_64" >> "${mirrorlist_filepath}"
+		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
 	done
 fi
 

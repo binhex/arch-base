@@ -12,7 +12,7 @@ TARGETARCH="${2}"
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow
-snapshot_date=$(date -d "1 days ago" +%Y/%m/%d)
+snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
 # write RELEASETAG to file to record the release tag used to build the image
 echo "BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-release'

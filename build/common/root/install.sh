@@ -21,7 +21,9 @@ echo "BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-release'
 if [[ "${TARGETARCH}" == "arm64" ]]; then
 	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' > '/etc/pacman.d/mirrorlist'
 else
-	echo 'Server = https://archive.archlinux.org/repos/'"${snapshot_date}"'/$repo/os/$arch' > '/etc/pacman.d/mirrorlist'
+	echo 'Server = https://europe.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
+	echo 'Server = https://america.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
+	echo 'Server = https://asia.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
 fi
 
 echo "[info] content of arch mirrorlist file"
@@ -46,7 +48,7 @@ echo "[info] set pacman to ignore signatures - required due to rolling release n
 sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
-pacman -Sy sed --noconfirm
+pacman -Sy sed --debug --noconfirm
 
 # configure pacman to not extract certain folders from packages being installed
 # this is done as we strip out locale, man, docs etc when we build the arch-scratch image

@@ -14,21 +14,30 @@ TARGETARCH="${2}"
 # previous as the mirror from live to the archive for arm packages is slow
 snapshot_date=$(date -d "2 days ago" +%Y/%m/%d)
 
+# define path to mirrorlist file
+mirrorlist_filepath='/etc/pacman.d/mirrorlist'
+
+# blank mirrorlist file
+rm -f "${mirrorlist_filepath}"
+
 # write RELEASETAG to file to record the release tag used to build the image
 echo "BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-release'
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "arm64" ]]; then
-	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/'"${snapshot_date}"'/$arch/$repo' >> '/etc/pacman.d/mirrorlist'
-	echo 'Server = https://alaa.ad24.cz/repos/'"${snapshot_date}"'/$arch/$repo' >> '/etc/pacman.d/mirrorlist'
+	server_list='tardis.tiny-vps.com/aarm alaa.ad24.cz'
+	for server in ${server_list}; do
+		echo "Server = http://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
+	done
 else
-	echo 'Server = https://europe.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
-	echo 'Server = https://america.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
-	echo 'Server = https://asia.archive.pkgbuild.com/repos/'"${snapshot_date}"'/$repo/os/$arch' >> '/etc/pacman.d/mirrorlist'
+	server_list='europe.archive.pkgbuild.com america.archive.pkgbuild.com asia.archive.pkgbuild.com'
+	for server in ${server_list}; do
+		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
+	done
 fi
 
-echo "[info] content of arch mirrorlist file"
-cat '/etc/pacman.d/mirrorlist'
+echo "[info] content of arch mirrorlist file..."
+cat "${mirrorlist_filepath}"
 
 # reset gpg (not required when source is bootstrap tarball, but keeping for historic reasons)
 rm -rf '/etc/pacman.d/gnupg/' '/root/.gnupg/' || true

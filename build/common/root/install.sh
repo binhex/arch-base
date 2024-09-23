@@ -46,7 +46,7 @@ echo "[info] set pacman to ignore signatures - required due to rolling release n
 sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
 
 # force pacman db refresh and install sed package (used to do package folder exclusions)
-pacman -Sy sed --noconfirm
+pacman -Syyu sed --noconfirm
 
 # configure pacman to not extract certain folders from packages being installed
 # this is done as we strip out locale, man, docs etc when we build the arch-scratch image

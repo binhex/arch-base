@@ -74,6 +74,19 @@ jobs:
           echo "[debug] Generated app name is '${app_name}'"
           echo "app_name=$app_name" >> $GITHUB_OUTPUT
         id: generate_app_name
+      - name: Disable IPv6 to prevent pacman upgrade issues
+        shell: bash
+        run: |
+          sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+          sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+          sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+      - name: Verify IPv6 disabled
+        shell: bash
+        run: |
+          echo "IPv6 status:"
+          sysctl net.ipv6.conf.all.disable_ipv6
+          sysctl net.ipv6.conf.default.disable_ipv6
+          sysctl net.ipv6.conf.lo.disable_ipv6
       - name: Build amd64 image and export to Docker for testing
         uses: Wandalen/wretry.action@v3
         with:

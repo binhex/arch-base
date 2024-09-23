@@ -74,6 +74,12 @@ jobs:
           echo "[debug] Generated app name is '${app_name}'"
           echo "app_name=$app_name" >> $GITHUB_OUTPUT
         id: generate_app_name
+      - name: Debug targetarch
+        shell: bash
+        run: |
+          export
+          echo "${TARGETARCH}"
+          uname -m
       - name: Build amd64 image and export to Docker for testing
         uses: Wandalen/wretry.action@v3
         with:
@@ -104,6 +110,7 @@ jobs:
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
             build-args: |
               RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+              TARGETARCH=$(uname -m)
           attempt_limit: 3
           attempt_delay: 600000
       - name: Trigger build of int images

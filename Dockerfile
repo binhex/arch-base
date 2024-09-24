@@ -24,9 +24,13 @@ ADD build/${TARGETARCH}/utils/busybox/busybox /bootstrap/busybox
 ################
 
 # symlink busybox utilities to /bootstrap folder
+# we use the exec form of RUN to avoid shell processing (the insertion of /bin/sh -c)
+# as we do not have this available at this point.
 RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 
-# define shell
+# we need to define the boostrap shell otherwise docker assume /bin/sh which does
+# not exist at this point, it also means we do not need to use the exec form of RUN
+# and therefore wont get tripped up with shell processing the arguments.
 SHELL ["/bootstrap/sh", "-c"]
 
 # run busybox bourne shell and use sub shell to execute busybox utils (wget, rm...)

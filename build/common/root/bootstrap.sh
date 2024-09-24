@@ -6,7 +6,7 @@ RELEASETAG="${1}"
 # get target arch from first parameter (defined in Dockerfile as arg)
 TARGETARCH="${2}"
 
-# create vars for arch
+# create vars for arch, note busybox wget does not support SSL thus url is http
 if [ "${TARGETARCH}" = "amd64" ]; then
 	url="http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"
 	exclude="root.x86_64"
@@ -24,5 +24,5 @@ else
 	exit 1
 fi
 
-# download tarball, note busybox wget does not support SSL
+# download tarball
 /bootstrap/sh -c "/bootstrap/wget --timeout=60 -O /bootstrap/archlinux.tar.${compression} ${url} && ${decompress} && /bootstrap/tar --exclude=${exclude}/etc/resolv.conf --exclude=${exclude}/etc/hosts -xvf /bootstrap/archlinux.tar ${strip} -C / && /bin/bash -c 'chmod +x /bootstrap/*.sh && /bin/bash /bootstrap/install.sh ${RELEASETAG} ${TARGETARCH}'"

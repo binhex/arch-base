@@ -39,11 +39,14 @@ if [[ "${TARGETARCH}" == "arm64" ]]; then
 	for server in ${server_list}; do
 		echo "Server = http://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	done
-else
+elif [[ "${TARGETARCH}" == "amd64" ]]; then
 	server_list='europe.archive.pkgbuild.com america.archive.pkgbuild.com asia.archive.pkgbuild.com'
 	for server in ${server_list}; do
 		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
 	done
+else
+	echo "[warn] Target architecture name '${TARGETARCH}' from build arg is empty or unexpected, exiting script..."
+	exit 1
 fi
 
 echo "[info] content of arch mirrorlist file..."

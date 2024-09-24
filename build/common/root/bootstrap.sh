@@ -6,6 +6,7 @@ RELEASETAG="${1}"
 # get target arch from first parameter (defined in Dockerfile as arg)
 TARGETARCH="${2}"
 
+echo "bootstrap target arch is ${TARGETARCH}"
 # create vars for arch
 if [ "${TARGETARCH}" = "x86_64" ]; then
 	url="http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"

@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.source="https://github.com/binhex/arch-base"
 # release tag name from buildx arg
 ARG RELEASETAG
 
-# arch from buildx --platform, e.g. amd64
+# arch from buildx --platform, e.g. amd64 and arm64
 ARG TARGETARCH
 
 # additional files
@@ -31,7 +31,7 @@ RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN ["/bootstrap/sh", "-c", "/bootstrap/bootstrap.sh ${RELEASETAG} ${TARGETARCH}"]
+RUN /bootstrap/sh -c '/bootstrap/bootstrap.sh "${RELEASETAG}" "${TARGETARCH}"'
 
 # env
 #####

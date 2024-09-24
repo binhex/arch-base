@@ -9,8 +9,16 @@ RELEASETAG="${1}"
 # get target arch from first parameter (defined in Dockerfile as arg)
 TARGETARCH="${2}"
 
-echo "target arch is ${TARGETARCH}"
-exit 1
+if [[ -z "${RELEASETAG}" ]]; then
+	echo "[warn] Release tag name from build arg is empty, exiting script..."
+	exit 1
+fi
+
+if [[ -z "${TARGETARCH}" ]]; then
+	echo "[warn] Target architecture name from build arg is empty, exiting script..."
+	exit 1
+fi
+
 # construct snapshot date (cannot use todays as archive wont exist) and set url for archive.
 # note: for arch linux arm archive repo that the snapshot date has to be at least 2 days
 # previous as the mirror from live to the archive for arm packages is slow

@@ -26,12 +26,15 @@ ADD build/${TARGETARCH}/utils/busybox/busybox /bootstrap/busybox
 # symlink busybox utilities to /bootstrap folder
 RUN ["/bootstrap/busybox", "--install", "-s", "/bootstrap"]
 
+# define shell
+SHELL ["/bootstrap/sh", "-c"]
+
 # run busybox bourne shell and use sub shell to execute busybox utils (wget, rm...)
 # to download and extract tarball.
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN ["/bootstrap/sh", "-c", '/bootstrap/bootstrap.sh ${RELEASETAG} ${TARGETARCH}']
+RUN /bootstrap/bootstrap.sh ${RELEASETAG} ${TARGETARCH}
 
 # env
 #####

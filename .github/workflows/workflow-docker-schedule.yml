@@ -53,13 +53,20 @@ jobs:
         run: |
             export
       - name: Identify GitHub Release tag name
-        # tag name is generated from date with '01' appended, as there is no upstream trigger (tdb)
-        # for this build as it's simply on a schedule (unlike the other builds).
+        # if release created (manual build) then use tag name present in runners environment
+        # 'GITHUB_REF_NAME', else if it's a scheduled build then generate tag name from date
+        # with '01' appended.
         shell: bash
         run: |
-          tag=$(date +%Y%m%d01)
-          echo "[debug] Generated tag name is '${tag}'"
-          echo "tag=$tag" >> $GITHUB_OUTPUT
+          if [[ -n "${GITHUB_REF_NAME}" ]]; then
+            tag="${GITHUB_REF_NAME}" && echo "tag=${tag//+/-}" >> $GITHUB_OUTPUT
+            echo "[debug] Generated tag name is '${tag}'"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          else
+            tag=$(date +%Y%m%d01)
+            echo "[debug] Generated tag name is '${tag}'"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          fi
         id: identify_github_release_tag_name
       - name: Generate temporary tag name
         shell: bash

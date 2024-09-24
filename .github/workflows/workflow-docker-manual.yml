@@ -83,6 +83,8 @@ jobs:
             load: true
             platforms: linux/amd64
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
+            build-args: |
+              RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
           attempt_limit: 3
           attempt_delay: 600000
       - name: Run tests using previously built image
@@ -104,7 +106,6 @@ jobs:
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
             build-args: |
               RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
-              TARGETARCH=$(uname -m)
           attempt_limit: 3
           attempt_delay: 600000
       - name: Trigger build of int images

@@ -40,6 +40,10 @@ SHELL ["/bootstrap/sh", "-c"]
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
 RUN /bootstrap/bootstrap.sh "${RELEASETAG}" "${TARGETARCH}"
 
+# once the bootstrap has run we set the shell back to the default for use in subsequently
+# built images from this base image
+SHELL ["/bin/sh", "-c"]
+
 # env
 #####
 

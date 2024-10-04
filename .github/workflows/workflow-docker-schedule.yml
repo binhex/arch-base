@@ -111,7 +111,7 @@ jobs:
             context: .
             push: true
             platforms: linux/amd64,linux/arm64
-            tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
+            tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
             build-args: |
               RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
           attempt_limit: 3

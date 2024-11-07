@@ -52,17 +52,16 @@ jobs:
         run: |
             export
       - name: Identify GitHub Release tag name
-        # if release created (manual build) then use tag name present in runners environment
-        # 'GITHUB_REF_NAME', else if it's a scheduled build then generate tag name from date
-        # with '01' appended.
+        # if release triggered by schedule then generate tag name from date with '01 appended'
+        # else use input tags name specified by user on manual trigger
         shell: bash
         run: |
-          if [[ -n "${GITHUB_REF_NAME}" ]]; then
-            tag="${GITHUB_REF_NAME}" && echo "tag=${tag//+/-}" >> $GITHUB_OUTPUT
+          if [[ "$(GITHUB_EVENT_NAME) == "schedule" ]]; then
+            tag=$(date +%Y%m%d01)
             echo "[debug] Generated tag name is '${tag}'"
             echo "tag=$tag" >> $GITHUB_OUTPUT
           else
-            tag=$(date +%Y%m%d01)
+            tag=${{ github.event.inputs.tags }}" && echo "tag=${tag//+/-}" >> $GITHUB_OUTPUT
             echo "[debug] Generated tag name is '${tag}'"
             echo "tag=$tag" >> $GITHUB_OUTPUT
           fi

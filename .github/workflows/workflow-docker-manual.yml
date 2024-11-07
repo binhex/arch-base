@@ -52,18 +52,27 @@ jobs:
         run: |
             export
       - name: Identify GitHub Release tag name
-        # if release triggered by schedule then generate tag name from date with '01 appended'
-        # else use input tags name specified by user on manual trigger
+        # if action triggered by schedule then generate tag name from date with '01 appended'
+        # elif action triggered by creation of release then use tag name specified by user
+        # elif action triggered manually then use tag name specified by user
+        # else unknown trigger
         shell: bash
         run: |
           if [[ "$(GITHUB_EVENT_NAME) == "schedule" ]]; then
             tag=$(date +%Y%m%d01)
             echo "[debug] Generated tag name is '${tag}'"
             echo "tag=$tag" >> $GITHUB_OUTPUT
-          else
+          elif [[ "$(GITHUB_EVENT_NAME)" == "push" ]]; then
+            tag="${GITHUB_REF_NAME}" && echo "tag=${tag//+/-}" >> $GITHUB_OUTPUT
+            echo "[debug] Generated tag name is '${tag}'"
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          elif [[ "$(GITHUB_EVENT_NAME)" == "workflow_dispatch" ]]; then
             tag=${{ github.event.inputs.tags }}" && echo "tag=${tag//+/-}" >> $GITHUB_OUTPUT
             echo "[debug] Generated tag name is '${tag}'"
             echo "tag=$tag" >> $GITHUB_OUTPUT
+          else
+            echo "[error] Unable to determine event name"
+            exit 1
           fi
         id: identify_github_release_tag_name
       - name: Generate temporary tag name

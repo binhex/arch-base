@@ -70,6 +70,9 @@ pacman-key --init && pacman-key --populate "${pacman_arch}"
 echo "[info] set pacman to ignore signatures - required due to rolling release nature of archlinux"
 sed -i -E "s~^SigLevel(\s+)?=.*~SigLevel = Never~g" '/etc/pacman.conf'
 
+echo "[info] set pacman to disable sandbox - required as sandbox prevents packages from installing"
+sed -i -E "s~^#DisableSandbox~DisableSandbox~g" '/etc/pacman.conf'
+
 # force pacman db refresh and install sed package (used to do package folder exclusions)
 pacman -Sy sed --debug --noconfirm
 

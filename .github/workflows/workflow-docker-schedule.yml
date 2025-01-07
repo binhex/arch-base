@@ -137,6 +137,9 @@ jobs:
             # process repos and create release (triggers action to build)
             for int_repo in "${int_repos_array[@]}"; do
 
+              # delete any existing release with the same tag name using gh cli
+              gh release delete "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --cleanup-tag --yes || true
+
               # create release using gh cli
               # note --target is not specified as it maybe 'main' or 'master'
               gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --notes "API/URL triggered release"

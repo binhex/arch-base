@@ -159,6 +159,9 @@ chmod -R 775 '/home/nobody'
 # set user "nobody" home directory (needs defining for pycharm, and possibly other apps)
 usermod -d /home/nobody nobody
 
+# ensure there is no expiry date for user nobody
+usermod --expiredate= nobody
+
 # set shell for user nobody
 chsh -s /bin/bash nobody
 
@@ -201,7 +204,7 @@ rm -rf /var/cache/* \
 
 # additional cleanup for base only
 rm -rf /root/* \
-/boot/* \
+'/boot/'* \
 /var/cache/pacman/pkg/* \
 /usr/lib/firmware \
 /usr/lib/modules \

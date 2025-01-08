@@ -2,8 +2,8 @@ name: workflow-docker-schedule
 
 on:
   schedule:
-    # run at midnight on day 7 of every month
-    - cron: "0 0 7 * *"
+    # run at midnight on day 28 of every month
+    - cron: "0 0 28 * *"
   push:
     tags:
       - '*'

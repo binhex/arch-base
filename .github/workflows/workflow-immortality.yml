@@ -1,4 +1,4 @@
-name: GitHub Workflow Immortality
+name: workflow-immortality
 
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   keepalive:
-    name: GitHub Workflow Immortality
+    name: workflow-immortality
 
     runs-on: ubuntu-latest
     permissions: {}

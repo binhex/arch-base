@@ -2,9 +2,8 @@ name: workflow-immortality
 
 on:
   schedule:
-    # run once a month on the first day of the month at 00:20 UTC
-    #- cron: '20 0 1 * *'
-    - cron: '15 09 * * *'
+    # run once a month on the first day of the month at 02:00 UTC
+    - cron: '00 02 01 * *'
   workflow_dispatch: {}
 
 jobs:
@@ -19,4 +18,4 @@ jobs:
         uses: PhrozenByte/gh-workflow-immortality@b755c1ad9f4d287b56784a749634551149aa0313 # v1.1.1
         with:
           secret: ${{ secrets.IMMORTALITY_PAT }}
-          owner_repos: true
+          owner_repos: true # this ensures all repositories owned by me (public and private) are kept alive

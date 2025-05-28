@@ -7,6 +7,7 @@ RELEASETAG="${1}"
 TARGETARCH="${2}"
 
 # create vars for arch, note busybox wget does not support SSL thus url is http
+# handy list showing http/https servers is here https://archlinux.org/mirrorlist/all/
 if [ "${TARGETARCH}" = "amd64" ]; then
 	url="http://mirror.rackspace.com/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"
 	exclude="root.x86_64"

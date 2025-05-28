@@ -34,16 +34,19 @@ rm -f "${mirrorlist_filepath}"
 echo "BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-release'
 
 # now set pacman to use snapshot for packages for snapshot date
-if [[ "${TARGETARCH}" == "arm64" ]]; then
-	server_list='tardis.tiny-vps.com/aarm alaa.ad24.cz'
-	for server in ${server_list}; do
-		echo "Server = http://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
-	done
-elif [[ "${TARGETARCH}" == "amd64" ]]; then
+if [[ "${TARGETARCH}" == "amd64" ]]; then
 	server_list='europe.archive.pkgbuild.com america.archive.pkgbuild.com asia.archive.pkgbuild.com'
 	for server in ${server_list}; do
 		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
 	done
+elif [[ "${TARGETARCH}" == "arm64" ]]; then
+	# arm archive is extremely slow (unusable), switching to live repo for now
+	server_list='eu.mirror.archlinuxarm.org'
+	echo "Server = https://${server}/\$arch/\$repo" >> "${mirrorlist_filepath}"
+	# server_list='tardis.tiny-vps.com/aarm alaa.ad24.cz'
+	# for server in ${server_list}; do
+	# 	echo "Server = https://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
+	# done
 else
 	echo "[warn] Target architecture name '${TARGETARCH}' from build arg is empty or unexpected, exiting script..."
 	exit 1

@@ -8,7 +8,7 @@ TARGETARCH="${2}"
 
 # create vars for arch, note busybox wget does not support SSL thus url is http
 if [ "${TARGETARCH}" = "amd64" ]; then
-	url="http://mirror.bytemark.co.uk/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"
+	url="http://mirror.rackspace.com/archlinux/iso/latest/archlinux-bootstrap-x86_64.tar.zst"
 	exclude="root.x86_64"
 	strip="--strip-components=1"
 	compression="zst"

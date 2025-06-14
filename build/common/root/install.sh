@@ -199,6 +199,9 @@ unzip /tmp/scripts-master.zip -d /tmp
 # move shell scripts to /usr/local/bin/
 mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/
 
+# ensure scripts can be altered and executed by user nobody
+chown -R nobody:users /usr/local/bin/ && chmod -R 777 /usr/local/bin/
+
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then
 

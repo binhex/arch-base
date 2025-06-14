@@ -187,6 +187,18 @@ fi
 # download dumb-init, used to do graceful exit when docker stop issued and correct reaping of zombie processes.
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "/usr/bin/dumb-init" -L "https://github.com/Yelp/dumb-init/releases/download/${dumbinit_release_tag}/dumb-init_${dumbinit_release_tag_strip}_${dumbinit_arch}" && chmod +x "/usr/bin/dumb-init"
 
+# build scripts
+####
+
+# download build scripts from github
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/scripts-master.zip -L https://github.com/binhex/scripts/archive/master.zip
+
+# unzip build scripts
+unzip /tmp/scripts-master.zip -d /tmp
+
+# move shell scripts to /usr/local/bin/
+mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/
+
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then
 

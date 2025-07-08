@@ -190,17 +190,18 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 # build scripts
 ####
 
+refresh_script_name='refresh.sh'
+refresh_filepath="/tmp/${refresh_script_name}"
+github_url="https://raw.githubusercontent.com/binhex/scripts/refs/heads/master/shell/docker/${refresh_script_name}"
+
+# remove refresh script if it exists
+rm -f "${refresh_filepath}"
+
 # download build scripts from github
-curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o /tmp/scripts-master.zip -L https://github.com/binhex/scripts/archive/master.zip
+curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "${refresh_filepath}" -L "${github_url}"
 
-# unzip build scripts
-unzip /tmp/scripts-master.zip -d /tmp
-
-# move shell scripts to /usr/local/bin/
-mv /tmp/scripts-master/shell/arch/docker/*.sh /usr/local/bin/
-
-# ensure scripts can be altered and executed by user nobody
-chown -R nobody:users /usr/local/bin/ && chmod -R 777 /usr/local/bin/
+# execute script to git clone all scripts from repository
+eval "${refresh_filepath}"
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

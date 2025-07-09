@@ -200,6 +200,8 @@ rm -f "${refresh_filepath}"
 # download build scripts from github
 curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-time 60 -o "${refresh_filepath}" -L "${github_url}"
 
+chmod +x "${refresh_filepath}"
+
 # execute script to git clone all scripts from repository
 eval "${refresh_filepath}"
 

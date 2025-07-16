@@ -62,9 +62,6 @@ ENV TERM=xterm
 # set environment variables for language
 ENV LANG=en_GB.UTF-8
 
-# set path for scripts
-ENV PATH="/usr/local/bin/shell/docker:$PATH"
-
 # run
 #####
 

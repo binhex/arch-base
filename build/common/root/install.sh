@@ -219,6 +219,7 @@ create_paths_format=$(echo "${create_paths}" | tr ' ' ':')
 
 # add script paths to bashrc files if not already present
 for dest_paths in ${bashrc_paths}; do
+  touch "${dest_paths}"
 	if ! grep -q "${create_paths_format}" "${dest_paths}" &>/dev/null || true; then
 		echo "export PATH=\"${create_paths_format}:\${PATH}\"" >> "${dest_paths}"
 	fi

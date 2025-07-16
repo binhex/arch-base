@@ -157,10 +157,26 @@ usermod -g users nobody
 # add user "nobody" to secondary group "nobody" (will retain primary membership)
 usermod -a -G nobody nobody
 
-# setup env for user nobody
-mkdir -p '/home/nobody'
-chown -R nobody:users '/home/nobody'
-chmod -R 775 '/home/nobody'
+# create directories for scripts and ensure they are owned by user "nobody" and group "users"
+script_paths='/usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
+
+for path in ${script_paths}; do
+	mkdir -p "${path}"
+	chown -R nobody:users "${path}"
+	chmod -R 775 "${path}"
+done
+
+bashrc_paths='/home/nobody/.bashrc /root/.bashrc'
+
+# convert space-separated paths to colon-separated format
+script_paths_format=$(echo "${script_paths}" | tr ' ' ':')
+
+# add script paths to bashrc files if not already present
+for dest_paths in ${bashrc_paths}; do
+	if ! grep -q "${script_paths_format}" "${dest_paths}" &>/dev/null; then
+		echo "export PATH=\"${script_paths_format}:\${PATH}\"" >> "${dest_paths}"
+	fi
+done
 
 # set user "nobody" home directory (needs defining for pycharm, and possibly other apps)
 usermod -d /home/nobody nobody

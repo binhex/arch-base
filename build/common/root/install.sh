@@ -151,8 +151,10 @@ echo en_GB.UTF-8 UTF-8 > '/etc/locale.gen'
 locale-gen
 echo LANG="en_GB.UTF-8" > '/etc/locale.conf'
 
+home_path='/home/nobody'
+
 # create home directory for user "nobody"
-mkdir -p /home/nobody
+mkdir -p "${home_path}"
 
 # add user "nobody" to primary group "users" (will remove any other group membership)
 usermod -g users nobody
@@ -161,7 +163,7 @@ usermod -g users nobody
 usermod -a -G nobody nobody
 
 # set user "nobody" home directory (needs defining for pycharm, and possibly other apps)
-usermod -d /home/nobody nobody
+usermod -d "${home_path}" nobody
 
 # ensure there is no expiry date for user nobody
 usermod --expiredate= nobody
@@ -206,8 +208,16 @@ eval "${refresh_filepath}"
 # set scripts path and permissions
 ####
 
+create_root_paths='/usr/local/bin/system /usr/local/bin/run'
+
+for path in ${create_root_paths}; do
+	mkdir -p "${path}"
+	chown -R nobody:users "${path}"
+	chmod -R 775 "${path}"
+done
+
 # create directories for scripts and ensure they are owned by user "nobody" and group "users"
-create_paths='/usr/local/bin/system /usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
+create_paths='/usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
 
 for path in ${create_paths}; do
 	mkdir -p "${path}"
@@ -226,6 +236,10 @@ for dest_paths in ${bashrc_paths}; do
 		echo "export PATH=\"${create_paths_format}:\${PATH}\"" >> "${dest_paths}"
 	fi
 done
+
+# ensure ownership/permissions are set for all files generated in home directory
+chown -R nobody:users "${home_path}"
+chmod -R 775 "${home_path}"
 
 # identify if base-devel package installed
 if pacman -Qg "base-devel" > /dev/null ; then

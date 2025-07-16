@@ -151,6 +151,9 @@ echo en_GB.UTF-8 UTF-8 > '/etc/locale.gen'
 locale-gen
 echo LANG="en_GB.UTF-8" > '/etc/locale.conf'
 
+# create home directory for user "nobody"
+mkdir -p /home/nobody
+
 # add user "nobody" to primary group "users" (will remove any other group membership)
 usermod -g users nobody
 
@@ -204,7 +207,7 @@ eval "${refresh_filepath}"
 ####
 
 # create directories for scripts and ensure they are owned by user "nobody" and group "users"
-create_paths='/usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
+create_paths='/usr/local/bin/system /usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
 
 for path in ${create_paths}; do
 	mkdir -p "${path}"
@@ -219,7 +222,6 @@ create_paths_format=$(echo "${create_paths}" | tr ' ' ':')
 
 # add script paths to bashrc files if not already present
 for dest_paths in ${bashrc_paths}; do
-  touch "${dest_paths}"
 	if ! grep -q "${create_paths_format}" "${dest_paths}" &>/dev/null || true; then
 		echo "export PATH=\"${create_paths_format}:\${PATH}\"" >> "${dest_paths}"
 	fi

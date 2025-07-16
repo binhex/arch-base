@@ -187,7 +187,7 @@ curl --connect-timeout 5 --max-time 600 --retry 5 --retry-delay 0 --retry-max-ti
 
 refresh_script_name='refresh.sh'
 refresh_filepath="/tmp/${refresh_script_name}"
-github_url="https://raw.githubusercontent.com/binhex/scripts/refs/heads/master/shell/docker/${refresh_script_name}"
+github_url="https://raw.githubusercontent.com/binhex/scripts/refs/heads/master/scripts/docker/${refresh_script_name}"
 
 # remove refresh script if it exists
 rm -f "${refresh_filepath}"

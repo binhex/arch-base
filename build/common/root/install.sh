@@ -3,11 +3,22 @@
 # exit script if return code != 0
 set -e
 
+# app name from buildx arg, used in healthcheck to identify app and monitor correct process
+APPNAME="${1}"
+shift
+
 # release tag name from buildx arg, stripped of build ver using string manipulation
 RELEASETAG="${1}"
+shift
 
-# get target arch from first parameter (defined in Dockerfile as arg)
-TARGETARCH="${2}"
+# target arch from buildx arg
+TARGETARCH="${1}"
+shift
+
+if [[ -z "${APPNAME}" ]]; then
+	echo "[warn] App name from build arg is empty, exiting script..."
+	exit 1
+fi
 
 if [[ -z "${RELEASETAG}" ]]; then
 	echo "[warn] Release tag name from build arg is empty, exiting script..."

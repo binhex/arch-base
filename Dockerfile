@@ -2,6 +2,9 @@ FROM scratch
 LABEL org.opencontainers.image.authors="binhex"
 LABEL org.opencontainers.image.source="https://github.com/binhex/arch-base"
 
+# app name from buildx arg
+ARG APPNAME
+
 # release tag name from buildx arg
 ARG RELEASETAG
 
@@ -44,7 +47,7 @@ SHELL ["/bootstrap/sh", "-c"]
 # once the tarball is extracted we then use bash to execute the install script to
 # install everything else for the base image.
 # note, do not line wrap the below command, as it will fail looking for /bin/sh
-RUN /bootstrap/bootstrap.sh "${RELEASETAG}" "${TARGETARCH}"
+RUN /bootstrap/bootstrap.sh "${APPNAME}" "${RELEASETAG}" "${TARGETARCH}"
 
 # once the bootstrap has run we set the shell back to the default for use in subsequently
 # built images from this base image

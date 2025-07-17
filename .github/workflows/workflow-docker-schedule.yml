@@ -101,6 +101,7 @@ jobs:
             tags: ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}
             build-args: |
               RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+              APPNAME=${{ steps.generate_app_name.outputs.app_name }}
           attempt_limit: 3
           attempt_delay: 600000
       - name: Run tests using previously built image
@@ -122,6 +123,7 @@ jobs:
             tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
             build-args: |
               RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+              APPNAME=${{ steps.generate_app_name.outputs.app_name }}
           attempt_limit: 3
           attempt_delay: 600000
       - name: Trigger build of int images

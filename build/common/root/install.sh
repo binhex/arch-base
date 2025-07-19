@@ -52,7 +52,7 @@ if [[ "${TARGETARCH}" == "amd64" ]]; then
 	done
 elif [[ "${TARGETARCH}" == "arm64" ]]; then
 	# arm archive is extremely slow (unusable), switching to live repo for now
-	server_list='eu.mirror.archlinuxarm.org uk.mirror.archlinuxarm.org de.mirror.archlinuxarm.org de3.mirror.archlinuxarm.org de4.mirror.archlinuxarm.org de5.mirror.archlinuxarm.org'
+	server_list='uk.mirror.archlinuxarm.org de.mirror.archlinuxarm.org de3.mirror.archlinuxarm.org de4.mirror.archlinuxarm.org de5.mirror.archlinuxarm.org eu.mirror.archlinuxarm.org'
 	for server in ${server_list}; do
 		echo "Server = https://${server}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	done

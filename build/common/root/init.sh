@@ -35,7 +35,7 @@ echo "[info] Application name: '${APPNAME}'" | ts '%Y-%m-%d %H:%M:%.S'
 
 echo "[info] Base image release tag: '${BASE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
 
-echo "[info] Output image release tag(s): '${IMAGE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
+echo "[info] Output image release tag: '${IMAGE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
 
 # NOTE Do not move PUID/PGID below PLACEHOLDERS, as they are referenced
 export PUID=$(echo "${PUID}" | sed -e 's~^[ \t]*~~;s~[ \t]*$~~')

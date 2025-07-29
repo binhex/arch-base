@@ -40,13 +40,13 @@ jobs:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_TOKEN }}
-      # - name: Sync GitHub README.md with Docker Hub
-      #   uses: peter-evans/dockerhub-description@v4
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_PASSWORD }} # NOTE: This MUST be the password NOT the token
-      #     repository: ${{ github.repository }}
-      #     short-description: ${{ github.event.repository.description }}
+      - name: Sync GitHub README.md with Docker Hub
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }} # NOTE: This MUST be the password NOT the token
+          repository: ${{ github.repository }}
+          short-description: ${{ github.event.repository.description }}
       - name: DEBUG Show Runners environment
         shell: bash
         run: |

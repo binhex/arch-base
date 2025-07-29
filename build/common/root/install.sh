@@ -57,7 +57,7 @@ elif [[ "${TARGETARCH}" == "arm64" ]]; then
 	for server in ${server_list}; do
 		echo "Server = https://${server}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	done
-	# server_list='tardis.tiny-vps.com/aarm alaa.ad24.cz'
+	# server_list='tardis.tiny-vps.com aarm alaa.ad24.cz'
 	# for server in ${server_list}; do
 	# 	echo "Server = https://${server}/repos/${snapshot_date}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	# done

@@ -129,4 +129,4 @@ echo "[info] Starting Supervisor..." | ts '%Y-%m-%d %H:%M:%.S'
 # restore file descriptors to prevent duplicate stdout & stderr to supervisord.log
 exec 1>&3 2>&4
 
-exec /usr/bin/supervisord -c /etc/supervisor.conf -n
+exec /usr/bin/supervisord -c /etc/supervisord.conf -n

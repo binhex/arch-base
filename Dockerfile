@@ -15,7 +15,7 @@ ARG TARGETARCH
 ##################
 
 # add supervisor conf file
-ADD build/common/root/*.conf /etc/supervisor.conf
+ADD build/common/root/*.conf /etc/supervisord.conf
 
 # add bootstrap bash script
 ADD build/common/root/bootstrap.sh /bootstrap/

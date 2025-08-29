@@ -137,7 +137,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: ${{ inputs.platforms }}
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.generate_tag_names.outputs.tag_names }}
           build-args: |

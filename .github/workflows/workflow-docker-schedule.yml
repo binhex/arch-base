@@ -111,35 +111,39 @@ jobs:
           git_clone_scripts_repo="https://github.com/binhex/scripts.git"
           git clone "${git_clone_scripts_repo}" "${git_clone_scripts_dest}"
           "${git_clone_scripts_dest}/scripts/docker/testrunner.sh" --app-name ${{ steps.generate_app_name.outputs.app_name }} --image-name "ghcr.io/${{ github.repository }}:${{ steps.generate_temporary_tag_name.outputs.test_tag }}"
-      - name: Build (use cache), tag and push amd64 to registries
-        uses: Wandalen/wretry.action@v3
+      - name: Generate tag names
+        shell: bash
+        run: |
+          # Define registries
+          registries=(
+            "${{ github.repository }}"
+            "quay.io/${{ github.repository }}"
+            "ghcr.io/${{ github.repository }}"
+            "registry.gitlab.com/${{ github.repository }}"
+          )
+
+          # Construct tag names
+          tag_names=""
+          for registry in "${registries[@]}"; do
+            tag_names+="${registry}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ${registry}:latest, "
+          done
+          # Remove trailing comma and space
+          tag_names="${tag_names%, }"
+
+          # Output tag names
+          echo "[debug] Constructed tag names: ${tag_names}"
+          echo "tag_names=${tag_names}" >> $GITHUB_OUTPUT
+        id: generate_tag_names
+      - name: Build, tag and push images to registries
+        uses: docker/build-push-action@v6
         with:
-          action: docker/build-push-action@v6
-          with: |
-            context: .
-            platforms: linux/amd64
-            push: true
-            tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
-            build-args: |
-              RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
-              APPNAME=${{ steps.generate_app_name.outputs.app_name }}
-          attempt_limit: 3
-          attempt_delay: 600000
-      - name: Build, tag and push arm64 to registries
-        if: contains('${{ inputs.platforms }}', 'linux/arm64')
-        uses: Wandalen/wretry.action@v3
-        with:
-          action: docker/build-push-action@v6
-          with: |
-            context: .
-            platforms: linux/arm64
-            push: true
-            tags: ${{ github.repository }}:latest, ${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, quay.io/${{ github.repository }}:latest, quay.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}, registry.gitlab.com/${{ github.repository }}:latest, registry.gitlab.com/${{ github.repository }}:${{ steps.identify_github_release_tag_name.outputs.tag }}
-            build-args: |
-              RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
-              APPNAME=${{ steps.generate_app_name.outputs.app_name }}
-          attempt_limit: 3
-          attempt_delay: 600000
+          context: .
+          platforms: ${{ inputs.platforms }}
+          push: true
+          tags: ${{ steps.generate_tag_names.outputs.tag_names }}
+          build-args: |
+            RELEASETAG=${{ steps.identify_github_release_tag_name.outputs.tag }}
+            APPNAME=${{ steps.generate_app_name.outputs.app_name }}
       - name: Trigger build of int images
         uses: Wandalen/wretry.action@v3
         with:
@@ -160,3 +164,5 @@ jobs:
               # note --target is not specified as it maybe 'main' or 'master'
               gh release create "${{ steps.identify_github_release_tag_name.outputs.tag }}" --repo "binhex/${int_repo}" --notes "API/URL triggered release"
             done
+          attempt_limit: 3
+          attempt_delay: 600000

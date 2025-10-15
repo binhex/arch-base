@@ -41,9 +41,9 @@ mirrorlist_filepath='/etc/pacman.d/mirrorlist'
 # blank mirrorlist file
 rm -f "${mirrorlist_filepath}"
 
-# write APPNAME and RELEASETAG to file to record the app name and release tag used to build the image
-# note as this is a base image there is no app name
-echo -e "export APPNAME=${APPNAME}\nexport IMAGE_RELEASE_TAG=${RELEASETAG}\nexport TARGETARCH=${TARGETARCH}\n" >> '/etc/image-build-info'
+# write BASE_RELEASE_TAG to file to record the base image tag used
+# note as this is a base image do not write APPNAME or TARGETARCH as these are writtenin subsequent images
+echo -e "export BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-build-info'
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "amd64" ]]; then

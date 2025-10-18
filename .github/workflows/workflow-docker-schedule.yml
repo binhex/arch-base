@@ -35,12 +35,7 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_TOKEN }}
-      - name: Login to GitLab
-        uses: docker/login-action@v3
-        with:
-          registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_TOKEN }}
+
       - name: Sync GitHub README.md with Docker Hub
         uses: peter-evans/dockerhub-description@v4
         with:
@@ -119,7 +114,6 @@ jobs:
             "${{ github.repository }}"
             "quay.io/${{ github.repository }}"
             "ghcr.io/${{ github.repository }}"
-            "registry.gitlab.com/${{ github.repository }}"
           )
 
           # Construct tag names

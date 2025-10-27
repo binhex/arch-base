@@ -47,13 +47,28 @@ echo -e "export BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-build-info'
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "amd64" ]]; then
-	server_list='europe.archive.pkgbuild.com america.archive.pkgbuild.com asia.archive.pkgbuild.com'
+	server_list="\
+		europe.archive.pkgbuild.com \
+		america.archive.pkgbuild.com \
+		asia.archive.pkgbuild.com"
 	for server in ${server_list}; do
 		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
 	done
 elif [[ "${TARGETARCH}" == "arm64" ]]; then
 	# arm archive is extremely slow (unusable), switching to live repo for now
-	server_list='de3.mirror.archlinuxarm.org de4.mirror.archlinuxarm.org de5.mirror.archlinuxarm.org eu.mirror.archlinuxarm.org ca.us.mirror.archlinuxarm.org'
+	server_list="\
+		dk.mirror.archlinuxarm.org \
+		de3.mirror.archlinuxarm.org \
+		de.mirror.archlinuxarm.org \
+		de4.mirror.archlinuxarm.org \
+		eu.mirror.archlinuxarm.org \
+		gr.mirror.archlinuxarm.org \
+		hu.mirror.archlinuxarm.org \
+		tw2.mirror.archlinuxarm.org \
+		tw.mirror.archlinuxarm.org \
+		ca.us.mirror.archlinuxarm.org \
+		nj.us.mirror.archlinuxarm.org \
+		fl.us.mirror.archlinuxarm.org"
 	for server in ${server_list}; do
 		echo "Server = https://${server}/\$arch/\$repo" >> "${mirrorlist_filepath}"
 	done
@@ -149,7 +164,22 @@ echo "[info] Adding required packages to pacman ignore package list to prevent u
 # /etc/hosts and /etc/resolv.conf being read only, see issue -
 # https://github.com/moby/buildkit/issues/1267#issuecomment-768903038
 #
-sed -i -e 's~#IgnorePkg.*~IgnorePkg = filesystem~g' '/etc/pacman.conf'
+sed -i -e "s~#IgnorePkg.*~IgnorePkg = \
+filesystem \
+linux-aarch64 \
+linux-firmware-whence \
+linux-firmware-amdgpu \
+linux-firmware-atheros \
+linux-firmware-broadcom \
+linux-firmware-cirrus \
+linux-firmware-intel \
+linux-firmware-mediatek \
+linux-firmware-nvidia \
+linux-firmware-other \
+linux-firmware-radeon \
+linux-firmware-realtek \
+linux-firmware\
+~g" '/etc/pacman.conf'
 
 echo "[info] Displaying contents of pacman config file, showing ignored packages..."
 cat '/etc/pacman.conf'

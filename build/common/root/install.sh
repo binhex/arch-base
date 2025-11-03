@@ -43,7 +43,7 @@ rm -f "${mirrorlist_filepath}"
 
 # write BASE_RELEASE_TAG to file to record the base image tag used
 # note as this is a base image do not write APPNAME or TARGETARCH as these are writtenin subsequent images
-echo -e "export BASE_RELEASE_TAG=${RELEASETAG}" >> '/etc/image-build-info'
+echo -e "export BASE_RELEASE_TAG=${RELEASETAG}\nexport TARGETARCH=${TARGETARCH}" >> '/etc/image-build-info'
 
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "amd64" ]]; then

@@ -31,11 +31,13 @@ fi
 
 echo "[info] System information: $(uname -a)" | ts '%Y-%m-%d %H:%M:%.S'
 
+echo "[info] Image architecture: '${TARGETARCH}'" | ts '%Y-%m-%d %H:%M:%.S'
+
 echo "[info] Application name: '${APPNAME}'" | ts '%Y-%m-%d %H:%M:%.S'
 
 echo "[info] Base image release tag: '${BASE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
 
-echo "[info] Output image release tag: '${IMAGE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
+echo "[info] Application image release tag: '${IMAGE_RELEASE_TAG}'" | ts '%Y-%m-%d %H:%M:%.S'
 
 # NOTE Do not move PUID/PGID below PLACEHOLDERS, as they are referenced
 export PUID=$(echo "${PUID}" | sed -e 's~^[ \t]*~~;s~[ \t]*$~~')
@@ -73,25 +75,58 @@ fi
 # permissions, otherwise recursively set on /config for host
 if [[ ! -f "/config/perms.txt" ]]; then
 
-	echo "[info] Setting permissions recursively on '/config'..." | ts '%Y-%m-%d %H:%M:%.S'
+	if [[ -d "/config" ]]; then
 
-	set +e
-	chown -R "${PUID}":"${PGID}" "/config"
-	exit_code_chown=$?
-	chmod -R 775 "/config"
-	exit_code_chmod=$?
-	set -e
+		echo "[info] Setting ownership and permissions recursively on '/config'..." | ts '%Y-%m-%d %H:%M:%.S'
 
-	if (( exit_code_chown != 0 || exit_code_chmod != 0 )); then
-		echo "[warn] Unable to chown/chmod '/config', assuming SMB mountpoint"
+		set +e
+		chown -R "${PUID}":"${PGID}" "/config"
+		exit_code_chown=$?
+		chmod -R 775 "/config"
+		exit_code_chmod=$?
+		set -e
+
+		if (( exit_code_chown != 0 || exit_code_chmod != 0 )); then
+			echo "[warn] Unable to chown/chmod '/config', assuming SMB mountpoint" | ts '%Y-%m-%d %H:%M:%.S'
+		else
+			echo "[info] Successfully set ownership and permissions on '/config'" | ts '%Y-%m-%d %H:%M:%.S'
+		fi
+
+	else
+
+		echo "[fatal] '/config' directory does not exist, exiting script..." | ts '%Y-%m-%d %H:%M:%.S'
+		exit 1
+
 	fi
 
-	echo "[info] Permissions reset on '/config'" | ts '%Y-%m-%d %H:%M:%.S'
-	echo "This file prevents permissions from being applied/re-applied to '/config', if you want to reset permissions then please delete this file and restart the container." > /config/perms.txt
+	if [[ -d "/data" ]]; then
+
+		echo "[info] Setting ownership and permissions non-recursively on '/data'..." | ts '%Y-%m-%d %H:%M:%.S'
+
+		set +e
+		chown "${PUID}":"${PGID}" "/data"
+		exit_code_chown=$?
+		chmod 775 "/data"
+		exit_code_chmod=$?
+		set -e
+
+		if (( exit_code_chown != 0 || exit_code_chmod != 0 )); then
+			echo "[info] Unable to chown/chmod '/data', assuming SMB mountpoint" | ts '%Y-%m-%d %H:%M:%.S'
+		else
+			echo "[info] Successfully set ownership and permissions on '/data'" | ts '%Y-%m-%d %H:%M:%.S'
+		fi
+
+	else
+
+		echo "[info] '/data' directory does not exist, skipping setting (non-recursive) ownership and permissions on '/data'" | ts '%Y-%m-%d %H:%M:%.S'
+
+	fi
+
+	echo "This file prevents ownership and permissions from being applied/re-applied to '/config' and '/data', if you want to reset ownership and permissions then please delete this file and restart the container." > /config/perms.txt
 
 else
 
-	echo "[info] Permissions already set for '/config'" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[info] Permissions file '/config/perms.txt' exists, skipping setting ownership and permissions on '/config' and '/data'" | ts '%Y-%m-%d %H:%M:%.S'
 
 fi
 

@@ -141,6 +141,7 @@ reiserfsprogs \
 s-nail \
 systemd \
 systemd-sysvcompat \
+systemd-resolvconf \
 usbutils \
 xfsprogs"
 

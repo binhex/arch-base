@@ -49,7 +49,15 @@ else
 fi
 
 # set user nobody to specified user id (non unique)
-usermod -o -u "${PUID}" nobody &>/dev/null
+# Check if user already has correct UID before running usermod
+current_uid=$(id -u nobody)
+if [[ "${current_uid}" != "${PUID}" ]]; then
+    echo "[info] Executing usermod for PUID '${PUID}'..." | ts '%Y-%m-%d %H:%M:%.S'
+    usermod -o -u "${PUID}" nobody &>/dev/null
+    echo "[info] usermod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
+else
+    echo "[info] User 'nobody' already has UID '${PUID}', skipping usermod" | ts '%Y-%m-%d %H:%M:%.S'
+fi
 
 export PGID=$(echo "${PGID}" | sed -e 's~^[ \t]*~~;s~[ \t]*$~~')
 if [[ ! -z "${PGID}" ]]; then
@@ -60,7 +68,14 @@ else
 fi
 
 # set group users to specified group id (non unique)
-groupmod -o -g "${PGID}" users &>/dev/null
+current_gid=$(getent group users | cut -d: -f3)
+if [[ "${current_gid}" != "${PGID}" ]]; then
+    echo "[info] Executing groupmod for PGID '${PGID}'..." | ts '%Y-%m-%d %H:%M:%.S'
+    groupmod -o -g "${PGID}" users &>/dev/null
+    echo "[info] groupmod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
+else
+    echo "[info] Group 'users' already has GID '${PGID}', skipping groupmod" | ts '%Y-%m-%d %H:%M:%.S'
+fi
 
 # set umask to specified value if defined
 if [[ ! -z "${UMASK}" ]]; then

@@ -49,7 +49,6 @@ else
 fi
 
 # set user nobody to specified user id (non unique)
-# Check if user already has correct UID before running usermod
 current_uid=$(id -u nobody)
 if [[ "${current_uid}" != "${PUID}" ]]; then
     echo "[info] Executing usermod for PUID '${PUID}'..." | ts '%Y-%m-%d %H:%M:%.S'

@@ -38,8 +38,10 @@ snapshot_date=$(date -d "5 days ago" +%Y/%m/%d)
 # define path to mirrorlist file
 mirrorlist_filepath='/etc/pacman.d/mirrorlist'
 
-# blank mirrorlist file
+# ensure pacman.d directory exists and blank mirrorlist file
+mkdir -p "$(dirname "${mirrorlist_filepath}")"
 rm -f "${mirrorlist_filepath}"
+touch "${mirrorlist_filepath}"
 
 # write BASE_RELEASE_TAG to file to record the base image tag used
 # note as this is a base image do not write APPNAME or TARGETARCH as these are writtenin subsequent images

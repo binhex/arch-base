@@ -50,9 +50,7 @@ echo -e "export BASE_RELEASE_TAG=${RELEASETAG}\nexport TARGETARCH=${TARGETARCH}"
 # now set pacman to use snapshot for packages for snapshot date
 if [[ "${TARGETARCH}" == "amd64" ]]; then
 	server_list="\
-		archive.archlinux.org \
-		europe.archive.pkgbuild.com \
-		umea.archive.pkgbuild.com"
+		archive.archlinux.org"
 	for server in ${server_list}; do
 		echo "Server = https://${server}/repos/${snapshot_date}/\$repo/os/\$arch" >> "${mirrorlist_filepath}"
 	done

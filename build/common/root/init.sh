@@ -56,11 +56,11 @@ sed -i 's/^group:.*/group: files/' /etc/nsswitch.conf
 # set user nobody to specified user id (non unique)
 current_uid=$(id -u nobody)
 if [[ "${current_uid}" != "${PUID}" ]]; then
-    echo "[info] Executing usermod for PUID '${PUID}'..." | ts '%Y-%m-%d %H:%M:%.S'
-    usermod -o -u "${PUID}" nobody &>/dev/null
-    echo "[info] usermod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[info] Executing usermod for PUID '${PUID}'..." | ts '%Y-%m-%d %H:%M:%.S'
+	usermod -o -u "${PUID}" nobody &>/dev/null
+	echo "[info] usermod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
 else
-    echo "[info] User 'nobody' already has UID '${PUID}', skipping usermod" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[info] User 'nobody' already has UID '${PUID}', skipping usermod" | ts '%Y-%m-%d %H:%M:%.S'
 fi
 
 export PGID=$(echo "${PGID}" | sed -e 's~^[ \t]*~~;s~[ \t]*$~~')
@@ -74,11 +74,11 @@ fi
 # set group users to specified group id (non unique)
 current_gid=$(getent group users | cut -d: -f3)
 if [[ "${current_gid}" != "${PGID}" ]]; then
-    echo "[info] Executing groupmod for PGID '${PGID}'..." | ts '%Y-%m-%d %H:%M:%.S'
-    groupmod -o -g "${PGID}" users &>/dev/null
-    echo "[info] groupmod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[info] Executing groupmod for PGID '${PGID}'..." | ts '%Y-%m-%d %H:%M:%.S'
+	groupmod -o -g "${PGID}" users &>/dev/null
+	echo "[info] groupmod completed successfully" | ts '%Y-%m-%d %H:%M:%.S'
 else
-    echo "[info] Group 'users' already has GID '${PGID}', skipping groupmod" | ts '%Y-%m-%d %H:%M:%.S'
+	echo "[info] Group 'users' already has GID '${PGID}', skipping groupmod" | ts '%Y-%m-%d %H:%M:%.S'
 fi
 
 # set umask to specified value if defined
@@ -152,7 +152,8 @@ fi
 # calculate disk usage for /tmp in bytes
 disk_usage_tmp=$(du -s /tmp | awk '{print $1}')
 
-# if disk usage of /tmp exceeds 1GB then do not clear down (could possibly be volume mount to media)
+# if disk usage of /tmp exceeds 1GB then do not clear down
+# (could possibly be volume mount to media)
 if [ "${disk_usage_tmp}" -gt 1073741824 ]; then
 
 	echo "[warn] /tmp directory contains 1GB+ of data, skipping clear down as this maybe mounted media" | ts '%Y-%m-%d %H:%M:%.S'
@@ -173,14 +174,45 @@ fi
 
 # PERMISSIONS_PLACEHOLDER
 
-# CONFIG_PLACEHOLDER
+echo "[info] Applying chown to paths '${install_paths}'..." | ts '%Y-%m-%d %H:%M:%.S'
 
-# set permissions to allow rw for all users (used when appending util output to supervisor log)
+# get previous puid/pgid (if first run then will be empty string)
+previous_puid=$(cat "/root/puid" 2>/dev/null || true)
+previous_pgid=$(cat "/root/pgid" 2>/dev/null || true)
+
+# if first run (no puid or pgid files in /tmp) or the PUID or PGID
+# env vars are different from the previous run then re-apply chown
+# with current PUID and PGID values.
+if [[ ! -f "/root/puid" || ! -f "/root/pgid" || "${previous_puid}" != "${PUID}" || "${previous_pgid}" != "${PGID}" ]]; then
+
+	# loop over the list of paths and run chown in parallel to sped up
+	# the process for people running overlay2
+	for path in ${install_paths}; do
+		if [[ -d "${path}" ]]; then
+			# 32 parallel processes, batch size of 100 files
+			find "${path}" -print0 | \
+				xargs -0 -n 100 -P 32 chown "${PUID}":"${PGID}" &
+		fi
+	done
+	wait
+
+fi
+
+# write out current PUID and PGID to files in /root (used to compare
+# on next run)
+echo "${PUID}" > /root/puid
+echo "${PGID}" > /root/pgid
+
+# set permissions to allow rw for all users (used when appending util
+# output to supervisor log)
 chmod 666 "/config/supervisord.log"
+
+# CONFIG_PLACEHOLDER
 
 echo "[info] Starting Supervisor..." | ts '%Y-%m-%d %H:%M:%.S'
 
-# restore file descriptors to prevent duplicate stdout & stderr to supervisord.log
+# restore file descriptors to prevent duplicate stdout & stderr to
+# supervisord.log
 exec 1>&3 2>&4
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf -n

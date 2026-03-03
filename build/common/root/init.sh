@@ -48,11 +48,6 @@ else
 	export PUID="99"
 fi
 
-# set nsswitch.conf to only use files for user/group resolution
-# fix for issues with usermod/groupmod taking a long time to process
-sed -i 's/^passwd:.*/passwd: files/' /etc/nsswitch.conf
-sed -i 's/^group:.*/group: files/' /etc/nsswitch.conf
-
 # set user nobody to specified user id (non unique)
 current_uid=$(id -u nobody)
 if [[ "${current_uid}" != "${PUID}" ]]; then
@@ -189,9 +184,7 @@ if [[ ! -f "/root/puid" || ! -f "/root/pgid" || "${previous_puid}" != "${PUID}" 
 	# the process for people running overlay2
 	for path in ${install_paths}; do
 		if [[ -d "${path}" ]]; then
-			# 32 parallel processes, batch size of 100 files
-			find "${path}" -print0 | \
-				xargs -0 -n 100 -P 32 chown "${PUID}":"${PGID}" &
+			chown -R "${PUID}":"${PGID}" "${path}"
 		fi
 	done
 	wait

@@ -169,32 +169,34 @@ fi
 
 # PERMISSIONS_PLACEHOLDER
 
-echo "[info] Applying chown to paths '${install_paths}'..." | ts '%Y-%m-%d %H:%M:%.S'
+if [[ -n "${install_paths}" ]]; then
 
-# get previous puid/pgid (if first run then will be empty string)
-previous_puid=$(cat "/root/puid" 2>/dev/null || true)
-previous_pgid=$(cat "/root/pgid" 2>/dev/null || true)
+	# get previous puid/pgid (if first run then will be empty string)
+	previous_puid=$(cat "/root/puid" 2>/dev/null || true)
+	previous_pgid=$(cat "/root/pgid" 2>/dev/null || true)
 
-# if first run (no puid or pgid files in /tmp) or the PUID or PGID
-# env vars are different from the previous run then re-apply chown
-# with current PUID and PGID values.
-if [[ ! -f "/root/puid" || ! -f "/root/pgid" || "${previous_puid}" != "${PUID}" || "${previous_pgid}" != "${PGID}" ]]; then
+	# if first run (no puid or pgid files in /tmp) or the PUID or PGID
+	# env vars are different from the previous run then re-apply chown
+	# with current PUID and PGID values.
+	if [[ ! -f "/root/puid" || ! -f "/root/pgid" || "${previous_puid}" != "${PUID}" || "${previous_pgid}" != "${PGID}" ]]; then
 
-	# loop over the list of paths and run chown in parallel to sped up
-	# the process for people running overlay2
-	for path in ${install_paths}; do
-		if [[ -d "${path}" ]]; then
-			chown -R "${PUID}":"${PGID}" "${path}"
-		fi
-	done
-	wait
+		# loop over the list of paths and run chown in parallel to sped up
+		# the process for people running overlay2
+		for path in ${install_paths}; do
+			if [[ -d "${path}" ]]; then
+				chown -R "${PUID}":"${PGID}" "${path}"
+			fi
+		done
+		wait
+
+	fi
+
+	# write out current PUID and PGID to files in /root (used to compare
+	# on next run)
+	echo "${PUID}" > /root/puid
+	echo "${PGID}" > /root/pgid
 
 fi
-
-# write out current PUID and PGID to files in /root (used to compare
-# on next run)
-echo "${PUID}" > /root/puid
-echo "${PGID}" > /root/pgid
 
 # set permissions to allow rw for all users (used when appending util
 # output to supervisor log)

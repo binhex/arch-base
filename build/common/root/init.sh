@@ -187,8 +187,6 @@ if [[ -n "${install_paths}" ]]; then
 				chown -R "${PUID}":"${PGID}" "${path}"
 			fi
 		done
-		wait
-
 	fi
 
 	# write out current PUID and PGID to files in /root (used to compare

@@ -253,12 +253,15 @@ eval "${refresh_filepath}"
 # set scripts path and permissions
 ####
 
+# note '/usr/local/bin/system' holds a git checkout of the scripts repository, so do
+# not recursively chmod it - changing the tracked file modes makes the checkout dirty
+# which then blocks 'git pull' in refresh.sh, leaving images with stale scripts
+
 create_root_paths='/usr/local/bin/system /usr/local/bin/run'
 
 for path in ${create_root_paths}; do
 	mkdir -p "${path}"
 	chown -R nobody:users "${path}"
-	chmod -R 775 "${path}"
 done
 
 # create directories for scripts and ensure they are owned by user "nobody" and group "users"
@@ -267,6 +270,12 @@ create_paths='/usr/local/bin/system/scripts/docker /usr/local/bin/run/scripts /u
 for path in ${create_paths}; do
 	mkdir -p "${path}"
 	chown -R nobody:users "${path}"
+done
+
+# set permissions for the runtime paths, the scripts git checkout above is excluded
+permissions_paths='/usr/local/bin/run /usr/local/bin/run/scripts /usr/local/bin/run/configs /usr/local/bin/run/utils'
+
+for path in ${permissions_paths}; do
 	chmod -R 775 "${path}"
 done
 

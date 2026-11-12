@@ -53,6 +53,9 @@ RUN /bootstrap/bootstrap.sh "${APPNAME}" "${RELEASETAG}" "${TARGETARCH}"
 # built images from this base image
 SHELL ["/bin/sh", "-c"]
 
+# add pre-configured config files for app
+ADD config/nobody/ /home/nobody/
+
 # env
 #####
 

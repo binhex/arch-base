@@ -200,6 +200,43 @@ fi
 # output to supervisor log)
 chmod 666 "/config/supervisord.log"
 
+# enable startup scripts to run if defined
+if [[ "${ENABLE_STARTUP_SCRIPTS}" == "yes" ]]; then
+
+	# define path to scripts
+	base_path="/config/${APPNAME,,}"
+	user_script_path="${base_path}/scripts"
+
+	mkdir -p "${user_script_path}"
+
+	# copy example startup script
+	# note slence stdout/stderr and ensure exit code 0 due to src file may not exist (symlink)
+	if [[ ! -f "${user_script_path}/example-startup-script.sh" ]]; then
+		cp "/home/nobody/scripts/example-startup-script.sh" "${user_script_path}/example-startup-script.sh" 2> /dev/null || true
+	fi
+
+	# find any scripts located in "${user_script_path}"
+	user_scripts=$(find "${user_script_path}" -maxdepth 1 -name '*sh' 2> '/dev/null' | xargs)
+
+  # define whether the script runs in parallel or sequentially based on the STARTUP_SCRIPTS_MODE env var
+  if [[ "${STARTUP_SCRIPTS_MODE}" == "parallel" ]]; then
+		mode='&'
+	else
+		mode=''
+	fi
+
+	# loop over scripts, make executable and source
+	for i in ${user_scripts}; do
+		chmod +x "${i}"
+		echo "[info] Executing user script '${i}' in '${mode}' mode" | ts '%Y-%m-%d %H:%M:%.S'
+		source "${i}" "${mode}"
+	done
+
+	# change ownership as we are running as root
+	chown -R nobody:users "${base_path}"
+
+fi
+
 # CONFIG_PLACEHOLDER
 
 echo "[info] Starting Supervisor..." | ts '%Y-%m-%d %H:%M:%.S'

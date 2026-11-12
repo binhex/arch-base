@@ -228,7 +228,7 @@ if [[ "${ENABLE_STARTUP_SCRIPTS}" == "yes" ]]; then
 	# loop over scripts, make executable and source
 	for i in ${user_scripts}; do
 		chmod +x "${i}"
-		echo "[info] Executing user script '${i}' in '${mode}' mode" | ts '%Y-%m-%d %H:%M:%.S'
+		echo "[info] Executing user script '${i}' in '${STARTUP_SCRIPTS_MODE}' mode..." | ts '%Y-%m-%d %H:%M:%.S'
 		source "${i}" "${mode}"
 	done
 
